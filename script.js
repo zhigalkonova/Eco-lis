@@ -427,7 +427,6 @@ function cacheDom() {
     "quizGateButton",
     "videoBackButton",
     "quizBackButton",
-    "localVideoPlayer",
     "levelBadge",
     "questionCounter",
     "progressFill",
@@ -553,15 +552,6 @@ function showScreen(screenName) {
   screens[screenName].classList.add("active");
   dom.topbar.classList.toggle("hidden", screenName === "language");
   window.scrollTo({ top: 0, behavior: "smooth" });
-
-  // Auto-pause video when moving away from the video screen
-  if (screenName !== "video") {
-    try {
-      if (dom.localVideoPlayer && !dom.localVideoPlayer.paused) {
-        dom.localVideoPlayer.pause();
-      }
-    } catch (e) {}
-  }
 }
 
 function renderInfo() {
@@ -617,7 +607,7 @@ function renderVideo() {
   dom.videoLead.textContent = video.lead;
   updateVideoGate();
   showScreen("video");
-  setupLocalVideoPlayer();
+  loadYouTubePlayer();
 }
 
 function updateVideoGate() {
@@ -643,49 +633,92 @@ function markVideoWatched() {
   updateVideoGate();
 }
 
-
-const LOCAL_VIDEOS = {
-  ru: "assets/video/Video Ru.mp4",
-  kk: "assets/video/Video kk.mp4"
-};
-
-function setupLocalVideoPlayer() {
-  const player = dom.localVideoPlayer;
-  if (!player) return;
-
-  const videoSrc = LOCAL_VIDEOS[state.lang] || LOCAL_VIDEOS.ru;
-  
-  // Set source and reload only if changed
-  const currentSrc = player.getAttribute("src");
-  if (currentSrc !== videoSrc) {
-    player.src = videoSrc;
-    player.load();
-    state.videoWatched = false;
-    updateVideoGate();
+function loadYouTubePlayer() {
+  if (window.YT?.Player) {
+    createYouTubePlayer();
+    return;
   }
 
-  // Bind video events for tracking and completion
-  player.onplaying = () => {
-    state.videoPlayStartTime = Date.now();
-  };
+  window.onYouTubeIframeAPIReady = createYouTubePlayer;
 
-  const flushWatchTime = () => {
-    if (state.videoPlayStartTime) {
-      const elapsed = Math.round((Date.now() - state.videoPlayStartTime) / 1000);
-      state.videoWatchDurationTotal = (state.videoWatchDurationTotal || 0) + elapsed;
-      state.videoPlayStartTime = null;
-      window.EcoAnalytics.updateAnalytics({ videoWatchTime: state.videoWatchDurationTotal });
+  if (!document.querySelector('script[src="https://www.youtube.com/iframe_api"]')) {
+    const tag = document.createElement("script");
+    tag.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(tag);
+  }
+
+  clearTimeout(state.playerLoadTimer);
+  state.playerLoadTimer = window.setTimeout(() => {
+    if (!window.YT?.Player && state.currentScreen === "video") {
+      const { video } = getCopy();
+      dom.videoStatus.textContent = video.apiFailed;
+      dom.videoStatus.className = "status-box warning";
     }
-  };
+  }, 9000);
+}
 
-  player.onpause = () => {
-    flushWatchTime();
-  };
+function createYouTubePlayer() {
+  clearTimeout(state.playerLoadTimer);
 
-  player.onended = () => {
-    flushWatchTime();
-    markVideoWatched();
-  };
+  const videoId = VIDEO_IDS[state.lang] || VIDEO_IDS.ru;
+
+  if (state.player) {
+    const { video } = getCopy();
+    if (!state.videoWatched) {
+      dom.videoStatus.textContent = video.waiting;
+      dom.videoStatus.className = "status-box";
+    }
+    try {
+      const currentUrl = state.player.getVideoUrl?.();
+      if (currentUrl && !currentUrl.includes(videoId)) {
+        state.player.cueVideoById(videoId);
+      }
+    } catch (e) {
+      console.warn("Could not cue new video, replacing player instance:", e);
+      try { state.player.destroy(); } catch (err) {}
+      state.player = null;
+      setTimeout(createYouTubePlayer, 100);
+    }
+    return;
+  }
+
+  state.player = new window.YT.Player("youtube-player", {
+    videoId: videoId,
+    playerVars: {
+      controls: 1, // Показывает элементы управления
+      fs: 1,       // Разрешает полноэкранный режим
+      modestbranding: 1,
+      playsinline: 1,
+      rel: 0,
+    },
+    events: {
+      onReady: () => {
+        if (!state.videoWatched) {
+          const { video } = getCopy();
+          dom.videoStatus.textContent = video.waiting;
+          dom.videoStatus.className = "status-box";
+        }
+      },
+      onStateChange: (event) => {
+        if (event.data === window.YT.PlayerState.PLAYING) {
+          state.videoPlayStartTime = Date.now();
+        } else if (
+          event.data === window.YT.PlayerState.PAUSED ||
+          event.data === window.YT.PlayerState.ENDED
+        ) {
+          if (state.videoPlayStartTime) {
+            const elapsed = Math.round((Date.now() - state.videoPlayStartTime) / 1000);
+            state.videoWatchDurationTotal = (state.videoWatchDurationTotal || 0) + elapsed;
+            state.videoPlayStartTime = null;
+            window.EcoAnalytics.updateAnalytics({ videoWatchTime: state.videoWatchDurationTotal });
+          }
+          if (event.data === window.YT.PlayerState.ENDED) {
+            markVideoWatched();
+          }
+        }
+      },
+    },
+  });
 }
 
 async function startQuiz(level) {
