@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eco QR | Панель управления</title>
+    <link rel="stylesheet" href="admin.css" />
+    <!-- Load Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Load Firebase compat SDKs -->
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <!-- Config and core analytics service -->
+    <script src="firebase-config.js"></script>
+    <script src="firebase.js"></script>
+    <!-- Admin panel controller -->
+    <script src="admin.js" defer></script>
+  </head>
+  <body>
+    <!-- Passcode Gate -->
+    <div class="auth-gate" id="authGate">
+      <div class="auth-panel">
+        <div class="auth-brand">
+          <span class="auth-logo">EQ</span>
+          <h2>Eco QR Admin</h2>
+        </div>
+        <p>Для просмотра аналитики Лисаковска введите секретный код доступа:</p>
+        <form id="authForm">
+          <input type="password" id="passcodeInput" placeholder="Введите код" required autofocus />
+          <button type="submit" class="auth-btn">Войти</button>
+        </form>
+        <p class="auth-error hidden" id="authError">Неверный код доступа!</p>
+      </div>
+    </div>
+
+    <!-- Main Dashboard UI -->
+    <div class="dashboard-shell hidden" id="dashboardShell">
+      <!-- Sidebar -->
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <span class="sidebar-logo">EQ</span>
+          <div>
+            <h3>Eco QR</h3>
+            <span class="sub">Лисаковск</span>
+          </div>
+        </div>
+        <nav class="sidebar-nav">
+          <a href="#summary" class="nav-item active" data-tab="summary">Обзор</a>
+          <a href="#questions" class="nav-item" data-tab="questions">Анализ вопросов</a>
+          <a href="#logs" class="nav-item" data-tab="logs">Журнал визитов</a>
+        </nav>
+        <div class="sidebar-footer">
+          <div class="db-status-badge" id="dbStatusBadge">
+            <span class="status-dot"></span>
+            <span class="status-text" id="dbStatusText">Оффлайн</span>
+          </div>
+          <button class="logout-btn" id="logoutBtn">Выйти</button>
+        </div>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <!-- Top Header -->
+        <header class="dashboard-header">
+          <div class="header-title">
+            <h1 id="tabTitle">Статистика QR-кода</h1>
+            <p id="tabSubtitle">Анализ активности и прохождения экологического тестирования</p>
+          </div>
+          <div class="header-actions">
+            <button class="action-btn secondary" id="btnRefresh">Обновить</button>
+            <button class="action-btn" id="btnExportCSV">Экспорт CSV</button>
+          </div>
+        </header>
+
+        <!-- Developer Mode Control -->
+        <section class="dev-banner" id="devBanner">
+          <div class="dev-info">
+            <strong>🔧 Режим разработчика (Mock Mode):</strong> База данных Firebase не подключена. Данные сохраняются и считываются из LocalStorage вашего браузера.
+          </div>
+          <div class="dev-actions">
+            <button class="dev-btn" id="btnGenMock">Сгенерировать 50 визитов</button>
+            <button class="dev-btn danger" id="btnClearMock">Очистить локальную БД</button>
+          </div>
+        </section>
+
+        <!-- Tab: Summary -->
+        <div class="tab-pane active" id="pane-summary">
+          <!-- KPI Metrics Cards Grid -->
+          <section class="kpi-grid">
+            <div class="kpi-card">
+              <div class="kpi-icon">Scan</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Переходы по QR</span>
+                <strong class="kpi-val" id="valVisits">0</strong>
+                <span class="kpi-sub">Всего сканирований</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon video">Play</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Смотрели видео</span>
+                <strong class="kpi-val" id="valVideo">0</strong>
+                <span class="kpi-sub" id="subVideoRate">0% от переходов</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon quiz">Test</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Начали тест</span>
+                <strong class="kpi-val" id="valQuizStarts">0</strong>
+                <span class="kpi-sub" id="subQuizStartRate">0% от переходов</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon complete">Check</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Завершили тест</span>
+                <strong class="kpi-val" id="valQuizCompletes">0</strong>
+                <span class="kpi-sub" id="subQuizCompleteRate">0% от переходов</span>
+              </div>
+            </div>
+
+            <div class="kpi-card">
+              <div class="kpi-icon score">Star</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Средний балл</span>
+                <strong class="kpi-val" id="valAvgScore">0%</strong>
+                <span class="kpi-sub">Средний % правильных</span>
+              </div>
+            </div>
+
+            <div class="kpi-card text-success">
+              <div class="kpi-icon coupon">Ticket</div>
+              <div class="kpi-content">
+                <span class="kpi-label">Выдано купонов</span>
+                <strong class="kpi-val" id="valCoupons">0</strong>
+                <span class="kpi-sub" id="subCouponRate">0% от переходов</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- Conversions & Time Averages -->
+          <section class="secondary-metrics">
+            <div class="metric-box">
+              <h3>Воронка конверсии</h3>
+              <div class="funnel-container">
+                <div class="funnel-step">
+                  <div class="funnel-label">Переход по QR</div>
+                  <div class="funnel-bar-wrapper">
+                    <div class="funnel-bar" style="width: 100%;"></div>
+                  </div>
+                  <div class="funnel-value" id="funnel-v1">0</div>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-label">Просмотр ролика</div>
+                  <div class="funnel-bar-wrapper">
+                    <div class="funnel-bar" id="funnel-b2" style="width: 0%;"></div>
+                  </div>
+                  <div class="funnel-value" id="funnel-v2">0 <span id="funnel-p2">(0%)</span></div>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-label">Начало теста</div>
+                  <div class="funnel-bar-wrapper">
+                    <div class="funnel-bar" id="funnel-b3" style="width: 0%;"></div>
+                  </div>
+                  <div class="funnel-value" id="funnel-v3">0 <span id="funnel-p3">(0%)</span></div>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-label">Завершение теста</div>
+                  <div class="funnel-bar-wrapper">
+                    <div class="funnel-bar" id="funnel-b4" style="width: 0%;"></div>
+                  </div>
+                  <div class="funnel-value" id="funnel-v4">0 <span id="funnel-p4">(0%)</span></div>
+                </div>
+                <div class="funnel-step">
+                  <div class="funnel-label">Получение купона</div>
+                  <div class="funnel-bar-wrapper">
+                    <div class="funnel-bar" id="funnel-b5" style="width: 0%;"></div>
+                  </div>
+                  <div class="funnel-value" id="funnel-v5">0 <span id="funnel-p5">(0%)</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="metric-box">
+              <h3>Временные показатели</h3>
+              <div class="durations-grid">
+                <div class="duration-item">
+                  <span class="dur-label">Ср. просмотр видео</span>
+                  <strong class="dur-val" id="valAvgVideoTime">0 сек</strong>
+                </div>
+                <div class="duration-item">
+                  <span class="dur-label">Ср. время 1 уровня (Easy)</span>
+                  <strong class="dur-val" id="valAvgEasyTime">0 сек</strong>
+                </div>
+                <div class="duration-item">
+                  <span class="dur-label">Ср. время 2 уровня (Medium)</span>
+                  <strong class="dur-val" id="valAvgMediumTime">0 сек</strong>
+                </div>
+                <div class="duration-item">
+                  <span class="dur-label">Попыток теста на пользователя</span>
+                  <strong class="dur-val" id="valAvgAttempts">0.0</strong>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Charts Grid -->
+          <section class="charts-grid">
+            <div class="chart-card">
+              <h3>Переходы по дням</h3>
+              <div class="chart-container">
+                <canvas id="chartVisitsByDay"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3>Распределение оценок (1 и 2 уровни)</h3>
+              <div class="chart-container">
+                <canvas id="chartScoreDistribution"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3>Выбранные языки</h3>
+              <div class="chart-container donut">
+                <canvas id="chartLanguages"></canvas>
+              </div>
+            </div>
+
+            <div class="chart-card">
+              <h3>Устройства и платформы</h3>
+              <div class="chart-container">
+                <canvas id="chartDevices"></canvas>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <!-- Tab: Questions Analysis -->
+        <div class="tab-pane" id="pane-questions">
+          <div class="questions-panels">
+            <!-- Hardest Questions Card -->
+            <div class="details-card">
+              <div class="card-header">
+                <h3>Самые сложные вопросы</h3>
+                <p>Вопросы с наименьшим процентом правильных ответов</p>
+              </div>
+              <div class="table-scroll">
+                <table class="report-table" id="tableHardestQuestions">
+                  <thead>
+                    <tr>
+                      <th>Вопрос</th>
+                      <th>Уровень</th>
+                      <th class="num">Всего ответов</th>
+                      <th class="num">Верных</th>
+                      <th class="num">Процент успеха</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="5" class="empty-state">Загрузка данных...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Most Popular Wrong Choices Card -->
+            <div class="details-card">
+              <div class="card-header">
+                <h3>Самые частые ошибки</h3>
+                <p>Неправильные ответы, которые пользователи выбирают чаще всего</p>
+              </div>
+              <div class="table-scroll">
+                <table class="report-table" id="tableCommonErrors">
+                  <thead>
+                    <tr>
+                      <th>Вопрос</th>
+                      <th>Неправильный ответ</th>
+                      <th class="num">Сколько раз выбран</th>
+                      <th class="num">% от неверных ответов</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="4" class="empty-state">Загрузка данных...</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab: Visitor Logs -->
+        <div class="tab-pane" id="pane-logs">
+          <div class="details-card font-dense">
+            <div class="card-header logs-header">
+              <div>
+                <h3>Журнал посещений</h3>
+                <p>Все зафиксированные посещения по QR-коду</p>
+              </div>
+              <div class="logs-filter-bar">
+                <input type="text" id="logSearch" placeholder="Поиск по ID или браузеру..." />
+                <select id="logFilterLang">
+                  <option value="all">Все языки</option>
+                  <option value="ru">Русский (RU)</option>
+                  <option value="kk">Қазақша (KK)</option>
+                  <option value="none">Язык не выбран</option>
+                </select>
+                <select id="logFilterDevice">
+                  <option value="all">Все устройства</option>
+                  <option value="Mobile">Мобильные</option>
+                  <option value="Desktop">Компьютеры</option>
+                  <option value="Tablet">Планшеты</option>
+                </select>
+              </div>
+            </div>
+            <div class="table-scroll">
+              <table class="report-table" id="tableVisitsLog">
+                <thead>
+                  <tr>
+                    <th>Время посещения</th>
+                    <th>ID визита (UUID)</th>
+                    <th>Устройство/ОС</th>
+                    <th>Язык</th>
+                    <th class="num">Видео (сек)</th>
+                    <th class="num">Баллы (Easy)</th>
+                    <th class="num">Баллы (Med)</th>
+                    <th class="num">Купон</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td colspan="8" class="empty-state">Загрузка данных...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Pagination -->
+            <div class="pagination-footer">
+              <span class="pagination-info" id="paginationInfo">Показано 0-0 из 0</span>
+              <div class="pagination-controls">
+                <button class="pagination-btn" id="btnPagePrev" disabled>&larr; Назад</button>
+                <button class="pagination-btn" id="btnPageNext" disabled>Вперед &rarr;</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Educational mini-site about environmental pollution in Lisakovsk with a bilingual quiz."
+    />
+    <title>Eco QR | Лисаковск</title>
+    <link rel="stylesheet" href="style.css" />
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="firebase-config.js"></script>
+    <script src="firebase.js"></script>
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar hidden" id="topbar">
+        <button class="brand-button" id="homeButton" type="button" aria-label="Home">
+          <span class="brand-mark" aria-hidden="true">EQ</span>
+          <span id="brandTitle">Eco QR</span>
+        </button>
+        <div class="topbar-actions">
+          <span class="language-chip" id="languageChip">RU</span>
+          <button class="ghost-button" id="changeLanguageButton" type="button">
+            Сменить язык
+          </button>
+        </div>
+      </header>
+
+      <main class="stage" id="app">
+        <section class="screen screen-language active" id="languageScreen">
+          <div class="language-panel">
+            <div class="language-kicker">Eco QR</div>
+            <h1>Выберите язык</h1>
+            <p>
+              Мини-сайт о загрязнении окружающей среды в Лисаковске откроется
+              на выбранном языке.
+            </p>
+            <div class="language-actions" aria-label="Language selection">
+              <button class="language-card" type="button" data-lang="kk">
+                <span class="flag" aria-hidden="true">🇰🇿</span>
+                <span>Қазақша</span>
+              </button>
+              <button class="language-card" type="button" data-lang="ru">
+                <span class="flag" aria-hidden="true">🇷🇺</span>
+                <span>Русский</span>
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="infoScreen">
+          <div class="hero-band">
+            <div class="hero-content">
+              <div class="hero-copy">
+                <p class="eyebrow" id="infoEyebrow"></p>
+                <h1 id="infoTitle"></h1>
+                <p id="infoLead"></p>
+                <div class="hero-actions">
+                  <button class="primary-button" id="continueButton" type="button"></button>
+                </div>
+              </div>
+              <div class="hero-visual">
+                <img
+                  src="assets/images/lisakovsk-eco.svg"
+                  alt=""
+                  loading="eager"
+                  decoding="async"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div class="content-wrap">
+            <section class="stats-grid" id="factsGrid" aria-label="Facts"></section>
+            <section class="cards-grid" id="infoCards" aria-label="Information"></section>
+            <section class="sources-panel" aria-label="Sources">
+              <div>
+                <p class="section-label" id="sourcesLabel"></p>
+                <h2 id="sourcesTitle"></h2>
+              </div>
+              <ul id="sourcesList"></ul>
+            </section>
+          </div>
+        </section>
+
+        <section class="screen" id="videoScreen">
+          <div class="video-layout">
+            <div class="video-copy">
+              <p class="eyebrow" id="videoEyebrow"></p>
+              <h1 id="videoTitle"></h1>
+              <p id="videoLead"></p>
+              <div class="status-box" id="videoStatus"></div>
+              <button class="primary-button hidden" id="quizGateButton" type="button"></button>
+            </div>
+            <div class="video-card">
+              <div class="video-frame" id="videoFrame">
+                <div id="youtube-player"></div>
+              </div>
+              <p class="video-note" id="videoNote"></p>
+            </div>
+          </div>
+        </section>
+
+        <section class="screen" id="quizScreen">
+          <div class="quiz-shell">
+            <div class="quiz-meta">
+              <span class="level-badge" id="levelBadge"></span>
+              <span id="questionCounter"></span>
+            </div>
+            <div class="progress-track" aria-hidden="true">
+              <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <article class="question-panel">
+              <h1 id="questionText"></h1>
+              <div class="answers-grid" id="answersGrid"></div>
+            </article>
+          </div>
+        </section>
+
+        <section class="screen" id="resultScreen">
+          <div class="result-panel">
+            <p class="eyebrow" id="resultEyebrow"></p>
+            <h1 id="resultTitle"></h1>
+            <p id="resultMessage"></p>
+            <div class="result-grid" id="resultGrid"></div>
+
+            <!-- Coupon Block -->
+            <div class="coupon-container hidden" id="couponContainer">
+              <div class="coupon-card">
+                <div class="coupon-header">
+                  <span class="coupon-badge" id="couponBadge"></span>
+                  <h3 id="couponTitle"></h3>
+                </div>
+                <p id="couponText"></p>
+                <button class="primary-button" id="claimCouponButton" type="button"></button>
+                
+                <div class="coupon-code-box hidden" id="couponCodeBox">
+                  <span class="coupon-label" id="couponLabel"></span>
+                  <div class="coupon-input-group">
+                    <code class="coupon-code" id="couponCode">ECOQR2026</code>
+                    <button class="ghost-button" id="copyCouponButton" type="button"></button>
+                  </div>
+                  <p class="coupon-expiry" id="couponExpiry"></p>
+                </div>
+              </div>
+            </div>
+
+            <div class="result-actions" id="resultActions"></div>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <noscript>
+      Для работы тестирования включите JavaScript в браузере.
+    </noscript>
+  </body>
+</html>
