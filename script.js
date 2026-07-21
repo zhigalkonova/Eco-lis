@@ -366,6 +366,8 @@ function cacheDom() {
     "videoLead",
     "videoStatus",
     "quizGateButton",
+    "videoBackButton",
+    "quizBackButton",
     "levelBadge",
     "questionCounter",
     "progressFill",
@@ -412,6 +414,8 @@ function bindEvents() {
   });
 
   dom.continueButton.addEventListener("click", renderVideo);
+  dom.videoBackButton.addEventListener("click", renderInfo);
+  dom.quizBackButton.addEventListener("click", renderVideo);
   dom.quizGateButton.addEventListener("click", () => startQuiz("easy"));
   dom.claimCouponButton.addEventListener("click", claimCoupon);
   dom.copyCouponButton.addEventListener("click", copyCouponCode);
@@ -465,6 +469,10 @@ function applyLanguage() {
   dom.brandTitle.textContent = copy.brand;
   dom.languageChip.textContent = copy.code;
   dom.changeLanguageButton.textContent = copy.changeLanguage;
+
+  const backLabel = state.lang === "kk" ? "Артқа" : "Назад";
+  dom.videoBackButton.textContent = backLabel;
+  dom.quizBackButton.textContent = backLabel;
 }
 
 function getCopy() {

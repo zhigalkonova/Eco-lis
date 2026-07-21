@@ -94,7 +94,10 @@
               <h1 id="videoTitle"></h1>
               <p id="videoLead"></p>
               <div class="status-box" id="videoStatus"></div>
-              <button class="primary-button hidden" id="quizGateButton" type="button"></button>
+              <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                <button class="secondary-button" id="videoBackButton" type="button">Назад</button>
+                <button class="primary-button hidden" id="quizGateButton" type="button"></button>
+              </div>
             </div>
             <div class="video-card">
               <div class="video-frame" id="videoFrame">
@@ -116,6 +119,9 @@
             <article class="question-panel">
               <h1 id="questionText"></h1>
               <div class="answers-grid" id="answersGrid"></div>
+              <div style="margin-top: 1.5rem; display: flex; justify-content: flex-end;">
+                <button class="secondary-button" id="quizBackButton" type="button">Назад</button>
+              </div>
             </article>
           </div>
         </section>
