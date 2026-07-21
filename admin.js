@@ -9,6 +9,7 @@ document.addEventListener("DOMContentLoaded", () => {
   // Attach event handlers for general actions
   document.getElementById("btnRefresh").addEventListener("click", loadData);
   document.getElementById("btnExportCSV").addEventListener("click", exportCSV);
+  document.getElementById("btnClearDB").addEventListener("click", clearDatabase);
 });
 
 // PASSCODE GATE SECURITY
@@ -724,6 +725,53 @@ function exportCSV() {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+async function clearDatabase() {
+  if (!confirm("Вы действительно хотите БЕЗВОЗВРАТНО удалить все записи из базы данных?")) {
+    return;
+  }
+
+  if (window.EcoAnalytics.isMockMode()) {
+    window.EcoAnalytics.clearMockDatabase();
+    await loadData();
+    alert("Локальная база данных успешно очищена.");
+    return;
+  }
+
+  const btn = document.getElementById("btnClearDB");
+  const origText = btn.textContent;
+  btn.disabled = true;
+  btn.textContent = "Очистка...";
+
+  try {
+    const isConfigured = window.firebaseConfig && window.firebaseConfig.apiKey && window.firebaseConfig.apiKey !== "YOUR_API_KEY";
+    if (isConfigured && window.firebase) {
+      const db = window.firebase.firestore();
+      const snapshot = await db.collection("visits").get();
+      const batch = db.batch();
+      
+      let count = 0;
+      snapshot.forEach(doc => {
+        batch.delete(doc.ref);
+        count++;
+      });
+
+      if (count > 0) {
+        await batch.commit();
+      }
+      alert(`Облачная база данных Firestore успешно очищена. Удалено документов: ${count}`);
+    } else {
+      alert("Firebase не инициализирован.");
+    }
+    await loadData();
+  } catch (error) {
+    console.error("Ошибка при удалении документов:", error);
+    alert("Не удалось очистить базу данных. Проверьте права доступа в консоли Firebase (Firestore Rules). Для удаления разрешите 'delete' или 'write' в правилах безопасности Firestore.");
+  } finally {
+    btn.disabled = false;
+    btn.textContent = origText;
+  }
 }
 
 // HTML escape helper
