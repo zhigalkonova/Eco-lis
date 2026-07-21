@@ -12,6 +12,65 @@ const STORAGE_KEYS = {
   coupon: "ecoQrCouponClaimed",
 };
 
+// Web Audio API Synthesizer for Quiz Game Tones
+const AudioSynth = {
+  ctx: null,
+  init() {
+    if (!this.ctx) {
+      this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+  },
+  playCorrect() {
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    const osc1 = this.ctx.createOscillator();
+    const osc2 = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc1.type = "sine";
+    osc2.type = "sine";
+    
+    osc1.frequency.setValueAtTime(523.25, now); // C5
+    osc1.frequency.setValueAtTime(659.25, now + 0.08); // E5
+    osc2.frequency.setValueAtTime(783.99, now + 0.08); // G5
+    
+    gain.gain.setValueAtTime(0.12, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.35);
+    
+    osc1.connect(gain);
+    osc2.connect(gain);
+    gain.connect(this.ctx.destination);
+    
+    osc1.start(now);
+    osc2.start(now + 0.08);
+    osc1.stop(now + 0.4);
+    osc2.stop(now + 0.4);
+  },
+  playWrong() {
+    this.init();
+    if (!this.ctx) return;
+    const now = this.ctx.currentTime;
+    
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(220, now); // A3
+    osc.frequency.linearRampToValueAtTime(147, now + 0.22); // D3
+    
+    gain.gain.setValueAtTime(0.15, now);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + 0.25);
+    
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    
+    osc.start(now);
+    osc.stop(now + 0.3);
+  }
+};
+
 const COPY = {
   ru: {
     code: "RU",
@@ -805,6 +864,11 @@ function selectAnswer(answerIndex) {
 
   if (isCorrect) {
     quiz.score += 1;
+    try { AudioSynth.playCorrect(); } catch (e) {}
+    try { navigator.vibrate?.(40); } catch (e) {}
+  } else {
+    try { AudioSynth.playWrong(); } catch (e) {}
+    try { navigator.vibrate?.([80, 50, 80]); } catch (e) {}
   }
 
   dom.answersGrid.querySelectorAll(".answer-button").forEach((button, index) => {
@@ -850,6 +914,19 @@ function renderResult(level, score) {
   const totalScore = (state.lastEasyScore || 0) + score;
   if (level === "medium" && totalScore >= 16) {
     dom.couponContainer.classList.remove("hidden");
+    
+    // Confetti blast and success vibration pattern
+    try {
+      if (typeof confetti === "function") {
+        confetti({
+          particleCount: 160,
+          spread: 80,
+          origin: { y: 0.65 },
+          colors: ["#10b981", "#059669", "#3b82f6", "#f59e0b"]
+        });
+      }
+      navigator.vibrate?.([100, 50, 100, 50, 200]);
+    } catch (e) {}
     dom.couponBadge.textContent = copy.coupon.badge;
     dom.couponTitle.textContent = copy.coupon.title;
     dom.couponText.textContent = copy.coupon.text;
