@@ -366,7 +366,6 @@ function cacheDom() {
     "videoLead",
     "videoStatus",
     "quizGateButton",
-    "videoNote",
     "levelBadge",
     "questionCounter",
     "progressFill",
@@ -539,7 +538,6 @@ function renderVideo() {
   dom.videoEyebrow.textContent = video.eyebrow;
   dom.videoTitle.textContent = video.title;
   dom.videoLead.textContent = video.lead;
-  dom.videoNote.textContent = video.note;
   updateVideoGate();
   showScreen("video");
   loadYouTubePlayer();
@@ -648,19 +646,7 @@ function createYouTubePlayer() {
             window.EcoAnalytics.updateAnalytics({ videoWatchTime: state.videoWatchDurationTotal });
           }
           if (event.data === window.YT.PlayerState.ENDED) {
-            const duration = state.player.getDuration();
-            const watched = state.videoWatchDurationTotal || 0;
-            // Требуем просмотра не менее 90% от длительности видеоролика
-            if (duration > 0 && watched >= duration * 0.9) {
-              markVideoWatched();
-            } else {
-              const isRu = state.lang === "ru";
-              const warningText = isRu 
-                ? "Пожалуйста, посмотрите ролик полностью без перемотки вперед, чтобы продолжить."
-                : "Жалғастыру үшін бейнероликті алға айналдырмай толық қараңыз.";
-              dom.videoStatus.textContent = warningText;
-              dom.videoStatus.className = "status-box warning";
-            }
+            markVideoWatched();
           }
         }
       },
