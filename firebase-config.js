@@ -1,10 +1,10 @@
-// Firebase configuration settings template
-// Replace the values below with your actual project config from the Firebase Console
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 window.firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_AUTH_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_STORAGE_BUCKET",
-  messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyDS_pk5KCouZxrEJK7Lna2ZPjbSBcXkNNc",
+  authDomain: "eco-lis-98624.firebaseapp.com",
+  projectId: "eco-lis-98624",
+  storageBucket: "eco-lis-98624.firebasestorage.app",
+  messagingSenderId: "12413296769",
+  appId: "1:12413296769:web:1c511d072ac25a31fc2d80",
+  measurementId: "G-CQTS93XX45"
 };
