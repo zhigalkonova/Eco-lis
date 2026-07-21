@@ -3,8 +3,8 @@
 const QUESTION_COUNT = 10;
 const PASS_SCORE = 8;
 const VIDEO_IDS = {
-  ru: "i5FKDXPGk_Y", // Сюда вставьте ID видео на русском
-  kk: "i5FKDXPGk_Y", // Сюда вставьте ID видео на казахском (Қазақша)
+  ru: "UZzhOxBURII", // ID видео на русском
+  kk: "UEfmIArk1_s", // ID видео на казахском (Қазақша)
 };
 const STORAGE_KEYS = {
   language: "ecoQrLanguage",
