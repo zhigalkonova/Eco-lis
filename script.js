@@ -841,7 +841,8 @@ function renderResult(level, score) {
 
   dom.couponContainer.classList.add("hidden");
 
-  if (level === "medium" && passed) {
+  const totalScore = (state.lastEasyScore || 0) + score;
+  if (level === "medium" && totalScore >= 16) {
     dom.couponContainer.classList.remove("hidden");
     dom.couponBadge.textContent = copy.coupon.badge;
     dom.couponTitle.textContent = copy.coupon.title;

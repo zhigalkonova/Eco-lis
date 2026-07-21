@@ -392,8 +392,8 @@
               visit.completed = true;
               visit.percent = Math.round(((easyScore + mediumScore) / 20) * 100);
 
-              // 75% of those who complete medium and pass (mediumScore >= 8) get coupon
-              if (mediumScore >= 8 && Math.random() > 0.25) {
+              // 75% of those who complete medium and score >= 16 overall get coupon
+              if (easyScore + mediumScore >= 16 && Math.random() > 0.25) {
                 visit.coupon = true;
                 visit.couponTime = new Date(createdAt.getTime() + 16 * 60 * 1000).toISOString();
               }
