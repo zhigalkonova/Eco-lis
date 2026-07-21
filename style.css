@@ -973,3 +973,144 @@ noscript {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* SCORE CIRCLE PROGRESS GAUGE */
+.score-circle-wrapper {
+  position: relative;
+  width: 160px;
+  height: 160px;
+  margin: 1.5rem auto;
+}
+.score-ring {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+.score-ring-bg {
+  fill: none;
+  stroke: rgba(16, 185, 129, 0.08);
+  stroke-width: 8;
+}
+.score-ring-fill {
+  fill: none;
+  stroke: url(#scoreGradient);
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke-dasharray: 314.16;
+  stroke-dashoffset: 314.16;
+  transition: stroke-dashoffset 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.score-circle-text {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+#scoreTextVal {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 2rem;
+  font-weight: 800;
+  color: var(--green-dark);
+}
+#scoreTextSub {
+  font-size: 0.78rem;
+  color: var(--muted);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* QUIZ REVIEW PANEL */
+.review-container {
+  margin-top: 2rem;
+  padding: 1.5rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  text-align: left;
+}
+.review-title {
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-size: 1.25rem;
+  margin-bottom: 1.25rem;
+  color: var(--green-dark);
+  font-weight: 700;
+}
+.review-item {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+}
+.review-item:last-child {
+  margin-bottom: 0;
+  padding-bottom: 0;
+  border-bottom: none;
+}
+.review-q-text {
+  font-weight: 700;
+  font-size: 0.98rem;
+  margin-bottom: 0.8rem;
+  color: var(--foreground);
+  line-height: 1.4;
+}
+.review-answers {
+  display: grid;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+}
+.review-ans-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.45rem 0.75rem;
+  border-radius: 8px;
+  transition: background-color 0.2s;
+}
+.review-ans-row.correct {
+  background: rgba(16, 185, 129, 0.08);
+  color: #065f46;
+  border: 1px solid rgba(16, 185, 129, 0.15);
+}
+.review-ans-row.wrong {
+  background: rgba(239, 68, 68, 0.06);
+  color: #991b1b;
+  border: 1px solid rgba(239, 68, 68, 0.12);
+}
+.review-ans-row.normal {
+  color: var(--muted);
+  border: 1px solid transparent;
+}
+.review-badge {
+  font-weight: 800;
+  font-size: 0.68rem;
+  text-transform: uppercase;
+  padding: 0.15rem 0.45rem;
+  border-radius: 4px;
+  letter-spacing: 0.02em;
+}
+.review-badge.correct {
+  background: var(--green);
+  color: #ffffff;
+}
+.review-badge.wrong {
+  background: var(--danger);
+  color: #ffffff;
+}
+
+/* COUPON GLOW EFFECT */
+.coupon-card.pulse-active {
+  animation: coupon-glow 2.5s infinite ease-in-out;
+}
+@keyframes coupon-glow {
+  0%, 100% {
+    box-shadow: 0 15px 35px rgba(16, 44, 33, 0.05), 0 0 0 0px rgba(16, 185, 129, 0.2);
+    border-color: var(--border);
+  }
+  50% {
+    box-shadow: 0 15px 40px rgba(16, 44, 33, 0.08), 0 0 22px 8px rgba(16, 185, 129, 0.15);
+    border-color: rgba(16, 185, 129, 0.6);
+  }
+}

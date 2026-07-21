@@ -163,6 +163,44 @@ const COPY = {
         },
       ],
     },
+    rudny: {
+      eyebrow: "Интересные факты о Рудном",
+      title: "Рудный: город горняков и созидателей",
+      lead: "Узнайте больше о соседнем промышленном гиганте нашей области, его истории, природе и культуре.",
+      facts: [
+        { value: "1957 год", label: "официальный год основания Рудного, возникшего при открытии крупного месторождения руды" },
+        { value: "110+ тыс", label: "жителей объединяет этот славный город на берегах Тобола" },
+        { value: "ССГПО", label: "один из крупнейших горно-обогатительных комбинат в Центральной Азии" },
+        { value: "5 скверов", label: "и большой городской парк культуры создают зеленый уют для прогулок" }
+      ],
+      cards: [
+        { icon: "👷", title: "ССГПО", text: "Соколовско-Сарбайское объединение является индустриальным сердцем города, перерабатывая миллионы тонн руды ежегодно." },
+        { icon: "🌳", title: "Зеленый Рудный", text: "В Рудном активно проводятся акции по высадке деревьев и благоустройству дворовых территорий." },
+        { icon: "🏛️", title: "Культура", text: "Городской молодежный центр, музеи и спортивный комплекс 'Горняк' являются центрами притяжения жителей." },
+        { icon: "🚜", title: "Памятник ковшу", text: "Символ первостроителей города — знаменитый памятник ковшу экскаватора, добывшему первую руду." },
+        { icon: "⛵", title: "Река Тобол", text: "Река Тобол протекает и через Рудный, даря набережные, пляжи и спортивные зоны." },
+        { icon: "✨", title: "Развитие", text: "В городе открываются новые образовательные и социальные объекты, повышая качество жизни жителей." }
+      ]
+    },
+    tazaKz: {
+      eyebrow: "Общенациональная эко-кампания",
+      title: "Таза Қазақстан: забота о природе и будущем",
+      lead: "Экологическая культура начинается с каждого из нас. Узнайте, почему важно сохранять природу нашей родины.",
+      facts: [
+        { value: "5 недель", label: "тематических этапов чистоты объединили людей по всей стране" },
+        { value: "3 млн+", label: "саженцев высажено по всему Казахстану в рамках зеленых недель" },
+        { value: "27%", label: "целевой уровень переработки твердых бытовых отходов по всей республике" },
+        { value: "Чистый воздух", label: "сохранение лесов помогает снизить уровень углекислого газа и улучшить экологию" }
+      ],
+      cards: [
+        { icon: "🗑️", title: "Сортировка", text: "Борьба с пластиком начинается с сортировки. Бумага, пластик и металл должны отправляться на переработку." },
+        { icon: "💧", title: "Чистая вода", text: "Охрана водоемов и родников бережет питьевую воду для людей и сохраняет жизнь речным обитателям." },
+        { icon: "🌳", title: "Лесопосадки", text: "Деревья — легкие планеты. Каждое посаженное дерево борется с пылью и делает воздух чище." },
+        { icon: "🧹", title: "Чистая территория", text: "Уборка мусора в парках и на улицах предотвращает загрязнение почвы и оберегает животных от травм." },
+        { icon: "🌱", title: "Эко-культура", text: "Бережное отношение к воде, свету и природе в повседневной жизни формирует культуру ответственного гражданина." },
+        { icon: "✨", title: "Будущее поколение", text: "Сохраняя природу сегодня, мы оставляем чистую, зеленую и здоровую планету для наших детей." }
+      ]
+    },
     video: {
       eyebrow: "Видео перед тестом",
       title: "Посмотрите ролик до конца",
@@ -312,6 +350,44 @@ const COPY = {
         },
       ],
     },
+    rudny: {
+      eyebrow: "Рудный туралы қызықты деректер",
+      title: "Рудный: кеншілер мен жасампаздар қаласы",
+      lead: "Облысымыздың көршілес өнеркәсіптік алыбы, оның тарихы, табиғаты мен мәдениеті туралы көбірек біліңіз.",
+      facts: [
+        { value: "1957 жыл", label: "ірі темір кен орнының ашылуымен Рудный қаласының негізі қаланған жыл" },
+        { value: "110+ мың", label: "Тобыл бойындағы осы даңқты қала біріктіретін тұрғындар саны" },
+        { value: "САӨБ", label: "Орталық Азиядағы ең ірі кен-байыту комбинаттарының бірі" },
+        { value: "5 сквере", label: "және үлкен қалалық мәдениет саябағы серуендеуге жайлы жасыл орта береді" }
+      ],
+      cards: [
+        { icon: "👷", title: "САӨБ", text: "Соколов-Сарыбай бірлестігі жыл сайын миллиондаған тонна кен өңдейтін қаланың индустриялық жүрегі болып табылады." },
+        { icon: "🌳", title: "Жасыл Рудный", text: "Рудныйда ағаш отырғызу және аула аумақтарын абаттандыру бойынша белсенді акциялар өткізіледі." },
+        { icon: "🏛️", title: "Мәдениет", text: "Қалалық жастар орталығы, мұражайлар және 'Горняк' спорт кешені тұрғындардың бас қосатын орындары." },
+        { icon: "🚜", title: "Ожау ескерткіші", text: "Қаланың алғашқы құрылысшыларының символы — алғашқы кенді өндірген экскаватор шөмішіне арналған ескерткіш." },
+        { icon: "⛵", title: "Тобыл өзені", text: "Тобыл өзені Рудный арқылы да өтіп, көркем саябақтар, жағажайлар мен спорттық нысандар ұсынады." },
+        { icon: "✨", title: "Даму", text: "Қалада тұрғындардың өмір сүру сапасын арттыратын жаңа білім беру және әлеуметтік нысандар ашылуда." }
+      ]
+    },
+    tazaKz: {
+      eyebrow: "Жалпыұлттық эко-науқан",
+      title: "Таза Қазақстан: табиғат пен болашаққа қамқорлық",
+      lead: "Экологиялық мәдениет әрқайсымыздан басталады. Отанымыздың табиғатын сақтау неге маңызды екенін біліңіз.",
+      facts: [
+        { value: "5 апта", label: "тазалықтың тақырыптық кезеңдері бүкіл ел бойынша адамдардың басын біріктірді" },
+        { value: "3 млн+", label: "жасыл апталықтар аясында Қазақстан бойынша отырғызылған көшеттер саны" },
+        { value: "27%", label: "республика бойынша қатты тұрмыстық қалдықтарды қайта өңдеудің мақсатты деңгейі" },
+        { value: "Таза ауа", label: "ормандарды сақтау көмірқышқыл газының деңгейін азайтып, экологияны жақсартуға көмектеседі" }
+      ],
+      cards: [
+        { icon: "🗑️", title: "Сұрыптау", text: "Пластикпен күрес сұрыптаудан басталады. Қағаз, пластик және металл қайта өңдеуге жіберілуі керек." },
+        { icon: "💧", title: "Таза су", text: "Су қоймалары мен бұлақтарды қорғау ауыз суды сақтайды және өзен жәндіктерінің тіршілігін қорғайды." },
+        { icon: "🌳", title: "Жасыл желек", text: "Ағаштар — планетаның өкпесі. Әрбір отырғызылған ағаш шаңмен күресіп, ауаны тазартады." },
+        { icon: "🧹", title: "Таза аумақ", text: "Саябақтар мен көшелерді тазалау топырақтың ластануын бәсеңдетіп, жануарларды жарақаттан қорғайды." },
+        { icon: "🌱", title: "Эко-мәдениет", text: "Күнделікті өмірде суды, жарықты және табиғатты үнемдеу жауапты азаматтың мәдениетін қалыптастырады." },
+        { icon: "✨", title: "Болашақ ұрпақ", text: "Бүгін табиғатты сақтай отырып, біз балаларымызға таза, жасыл және сау планетаны қалдырамыз." }
+      ]
+    },
     video: {
       eyebrow: "Тест алдындағы видео",
       title: "Бейнероликті соңына дейін көріңіз",
@@ -447,6 +523,28 @@ function cacheDom() {
     "couponCode",
     "copyCouponButton",
     "couponExpiry",
+    "rudnyScreen",
+    "rudnyEyebrow",
+    "rudnyTitle",
+    "rudnyLead",
+    "rudnyFactsGrid",
+    "rudnyCards",
+    "rudnyBackButton",
+    "rudnyContinueButton",
+    "tazaKzScreen",
+    "tazaKzEyebrow",
+    "tazaKzTitle",
+    "tazaKzLead",
+    "tazaKzFactsGrid",
+    "tazaKzCards",
+    "tazaKzBackButton",
+    "tazaKzContinueButton",
+    "scoreRingFill",
+    "scoreTextVal",
+    "scoreTextSub",
+    "reviewContainer",
+    "reviewList",
+    "reviewTitle",
   ].forEach((id) => {
     dom[id] = document.getElementById(id);
   });
@@ -472,8 +570,19 @@ function bindEvents() {
     }
   });
 
-  dom.continueButton.addEventListener("click", renderVideo);
-  dom.videoBackButton.addEventListener("click", renderInfo);
+  const backLabel = state.lang === "kk" ? "Артқа" : "Назад";
+  const continueLabel = state.lang === "kk" ? "Жалғастыру" : "Продолжить";
+  dom.rudnyBackButton.textContent = backLabel;
+  dom.tazaKzBackButton.textContent = backLabel;
+  dom.rudnyContinueButton.textContent = continueLabel;
+  dom.tazaKzContinueButton.textContent = continueLabel;
+
+  dom.continueButton.addEventListener("click", renderRudny);
+  dom.rudnyBackButton.addEventListener("click", renderInfo);
+  dom.rudnyContinueButton.addEventListener("click", renderTazaKz);
+  dom.tazaKzBackButton.addEventListener("click", renderRudny);
+  dom.tazaKzContinueButton.addEventListener("click", renderVideo);
+  dom.videoBackButton.addEventListener("click", renderTazaKz);
   dom.quizBackButton.addEventListener("click", renderVideo);
   dom.quizGateButton.addEventListener("click", () => startQuiz("easy"));
   dom.claimCouponButton.addEventListener("click", claimCoupon);
@@ -543,6 +652,8 @@ function showScreen(screenName) {
   const screens = {
     language: dom.languageScreen,
     info: dom.infoScreen,
+    rudny: dom.rudnyScreen,
+    tazaKz: dom.tazaKzScreen,
     video: dom.videoScreen,
     quiz: dom.quizScreen,
     result: dom.resultScreen,
@@ -597,6 +708,58 @@ function renderInfo() {
     .join("");
 
   showScreen("info");
+}
+
+function renderRudny() {
+  const copy = getCopy();
+  applyLanguage();
+  
+  dom.rudnyEyebrow.textContent = copy.rudny.eyebrow;
+  dom.rudnyTitle.textContent = copy.rudny.title;
+  dom.rudnyLead.textContent = copy.rudny.lead;
+  
+  dom.rudnyFactsGrid.innerHTML = copy.rudny.facts.map(fact => `
+    <article class="fact-card">
+      <p class="fact-value">${escapeHtml(fact.value)}</p>
+      <p class="fact-label">${escapeHtml(fact.label)}</p>
+    </article>
+  `).join("");
+  
+  dom.rudnyCards.innerHTML = copy.rudny.cards.map(card => `
+    <article class="info-card">
+      <div class="card-icon" aria-hidden="true">${card.icon}</div>
+      <h2>${escapeHtml(card.title)}</h2>
+      <p>${escapeHtml(card.text)}</p>
+    </article>
+  `).join("");
+  
+  showScreen("rudny");
+}
+
+function renderTazaKz() {
+  const copy = getCopy();
+  applyLanguage();
+  
+  dom.tazaKzEyebrow.textContent = copy.tazaKz.eyebrow;
+  dom.tazaKzTitle.textContent = copy.tazaKz.title;
+  dom.tazaKzLead.textContent = copy.tazaKz.lead;
+  
+  dom.tazaKzFactsGrid.innerHTML = copy.tazaKz.facts.map(fact => `
+    <article class="fact-card">
+      <p class="fact-value">${escapeHtml(fact.value)}</p>
+      <p class="fact-label">${escapeHtml(fact.label)}</p>
+    </article>
+  `).join("");
+  
+  dom.tazaKzCards.innerHTML = copy.tazaKz.cards.map(card => `
+    <article class="info-card">
+      <div class="card-icon" aria-hidden="true">${card.icon}</div>
+      <h2>${escapeHtml(card.title)}</h2>
+      <p>${escapeHtml(card.text)}</p>
+    </article>
+  `).join("");
+  
+  showScreen("tazaKz");
 }
 
 function renderVideo() {
@@ -859,7 +1022,10 @@ function selectAnswer(answerIndex) {
     questionText: currentQuestion.text,
     selectedAnswerIndex: currentQuestion.answers[answerIndex].originalIndex,
     correctAnswerIndex: currentQuestion.rawQuestion.correct,
-    isCorrect: isCorrect
+    isCorrect: isCorrect,
+    shuffledAnswers: currentQuestion.answers.map(a => a.text),
+    selectedShuffledIndex: answerIndex,
+    correctShuffledIndex: currentQuestion.correctIndex
   });
 
   if (isCorrect) {
@@ -914,6 +1080,10 @@ function renderResult(level, score) {
   const totalScore = (state.lastEasyScore || 0) + score;
   if (level === "medium" && totalScore >= 16) {
     dom.couponContainer.classList.remove("hidden");
+    const couponCard = dom.couponContainer.querySelector(".coupon-card");
+    if (couponCard) {
+      couponCard.classList.add("pulse-active");
+    }
     
     // Confetti blast and success vibration pattern
     try {
@@ -994,6 +1164,74 @@ function renderResult(level, score) {
       `,
     )
     .join("");
+
+  // Animate circular progress ring
+  const ringFill = dom.scoreRingFill;
+  const valSpan = dom.scoreTextVal;
+  const subSpan = dom.scoreTextSub;
+  if (ringFill && valSpan && subSpan) {
+    subSpan.textContent = state.lang === "kk" ? "Дұрыс" : "Правильно";
+    const circumference = 2 * Math.PI * 50; // 314.159
+    ringFill.style.strokeDasharray = `${circumference}`;
+    const offset = circumference - (percent / 100) * circumference;
+    
+    setTimeout(() => {
+      ringFill.style.strokeDashoffset = `${offset}`;
+    }, 100);
+
+    let currentVal = 0;
+    const duration = 1500;
+    const stepTime = 30;
+    const steps = duration / stepTime;
+    const increment = percent / steps;
+    const timer = setInterval(() => {
+      currentVal += increment;
+      if (currentVal >= percent) {
+        currentVal = percent;
+        clearInterval(timer);
+      }
+      valSpan.textContent = `${Math.round(currentVal)}%`;
+    }, stepTime);
+  }
+
+  // Populate Quiz Review
+  dom.reviewContainer.classList.add("hidden");
+  if (level === "medium" && state.quiz?.answersLog) {
+    dom.reviewContainer.classList.remove("hidden");
+    dom.reviewTitle.textContent = state.lang === "kk" ? "Жауаптарды талдау" : "Разбор ваших ответов";
+    
+    dom.reviewList.innerHTML = state.quiz.answersLog.map((log, index) => {
+      const qNum = index + 1;
+      const choicesHtml = log.shuffledAnswers.map((ansText, aIdx) => {
+        let statusClass = "normal";
+        let badgeHtml = "";
+        
+        if (aIdx === log.correctShuffledIndex) {
+          statusClass = "correct";
+          badgeHtml = `<span class="review-badge correct">${state.lang === "kk" ? "Дұрыс" : "Верно"}</span>`;
+        } else if (aIdx === log.selectedShuffledIndex && !log.isCorrect) {
+          statusClass = "wrong";
+          badgeHtml = `<span class="review-badge wrong">${state.lang === "kk" ? "Қате" : "Ваш ответ"}</span>`;
+        }
+        
+        const letter = String.fromCharCode(65 + aIdx);
+        return `
+          <div class="review-ans-row ${statusClass}">
+            <span class="answer-letter" style="width:1.6rem;height:1.6rem;font-size:0.75rem;">${letter}</span>
+            <span style="flex-grow:1">${escapeHtml(ansText)}</span>
+            ${badgeHtml}
+          </div>
+        `;
+      }).join("");
+      
+      return `
+        <div class="review-item">
+          <p class="review-q-text">${qNum}. ${escapeHtml(log.questionText)}</p>
+          <div class="review-answers">${choicesHtml}</div>
+        </div>
+      `;
+    }).join("");
+  }
 
   dom.resultActions.innerHTML = "";
   if (level === "easy" && !passed) {
