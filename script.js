@@ -620,9 +620,8 @@ function createYouTubePlayer() {
   state.player = new window.YT.Player("youtube-player", {
     videoId: videoId,
     playerVars: {
-      controls: 0,
-      disablekb: 1,
-      fs: 0,
+      controls: 1, // Показывает элементы управления
+      fs: 1,       // Разрешает полноэкранный режим
       modestbranding: 1,
       playsinline: 1,
       rel: 0,
