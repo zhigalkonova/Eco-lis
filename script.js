@@ -2,7 +2,10 @@
 
 const QUESTION_COUNT = 10;
 const PASS_SCORE = 8;
-const VIDEO_ID = "i5FKDXPGk_Y";
+const VIDEO_IDS = {
+  ru: "i5FKDXPGk_Y", // Сюда вставьте ID видео на русском
+  kk: "i5FKDXPGk_Y", // Сюда вставьте ID видео на казахском (Қазақша)
+};
 const STORAGE_KEYS = {
   language: "ecoQrLanguage",
   videoWatched: "ecoQrVideoWatched",
@@ -592,17 +595,30 @@ function loadYouTubePlayer() {
 function createYouTubePlayer() {
   clearTimeout(state.playerLoadTimer);
 
+  const videoId = VIDEO_IDS[state.lang] || VIDEO_IDS.ru;
+
   if (state.player) {
     const { video } = getCopy();
     if (!state.videoWatched) {
       dom.videoStatus.textContent = video.waiting;
       dom.videoStatus.className = "status-box";
     }
+    try {
+      const currentUrl = state.player.getVideoUrl?.();
+      if (currentUrl && !currentUrl.includes(videoId)) {
+        state.player.cueVideoById(videoId);
+      }
+    } catch (e) {
+      console.warn("Could not cue new video, replacing player instance:", e);
+      try { state.player.destroy(); } catch (err) {}
+      state.player = null;
+      setTimeout(createYouTubePlayer, 100);
+    }
     return;
   }
 
   state.player = new window.YT.Player("youtube-player", {
-    videoId: VIDEO_ID,
+    videoId: videoId,
     playerVars: {
       controls: 0,
       disablekb: 1,
