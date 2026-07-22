@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initAuth();
   initTabs();
   initDevTools();
+  initCouponsManager();
   
   // Attach event handlers for general actions
   document.getElementById("btnRefresh").addEventListener("click", loadData);
@@ -66,6 +67,10 @@ function initTabs() {
     summary: {
       title: "Статистика QR-кода",
       sub: "Анализ активности и прохождения экологического тестирования"
+    },
+    coupons: {
+      title: "Проверка и гашение купонов",
+      sub: "Инструмент проверки и единоразового списания промокодов партнеров"
     },
     questions: {
       title: "Аналитика вопросов теста",
@@ -157,6 +162,7 @@ async function loadData() {
   renderCharts();
   renderQuestionsAnalytics();
   initLogsTable();
+  loadCouponsData();
 }
 
 function renderKPIs() {
@@ -782,4 +788,103 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#039;");
+}
+
+// COUPON VERIFICATION & REDEMPTION MANAGER
+function initCouponsManager() {
+  const form = document.getElementById("couponLookupForm");
+  if (!form) return;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    const code = document.getElementById("couponCodeInput").value;
+    const resultBox = document.getElementById("couponSearchResult");
+    resultBox.classList.remove("hidden");
+    resultBox.innerHTML = "<p style='color:var(--muted); font-weight: 600;'>Проверка кода в базе...</p>";
+
+    const coupon = await window.EcoAnalytics.getCoupon(code);
+
+    if (!coupon) {
+      resultBox.innerHTML = `
+        <div style="background: var(--rose-soft); color: var(--rose); border: 1px solid var(--rose); padding: 1.25rem; border-radius: var(--radius);">
+          <strong>❌ Ошибка:</strong> Купон с кодом <code>${escapeHtml(code.toUpperCase())}</code> не найден в базе данных!
+        </div>
+      `;
+      return;
+    }
+
+    const createdStr = coupon.createdAt ? new Date(coupon.createdAt).toLocaleString("ru-RU") : "Неизвестно";
+    
+    if (coupon.used) {
+      const usedStr = coupon.usedAt ? new Date(coupon.usedAt).toLocaleString("ru-RU") : "Ранее";
+      resultBox.innerHTML = `
+        <div style="background: #fee2e2; color: #991b1b; border: 1px solid #fca5a5; padding: 1.5rem; border-radius: 12px;">
+          <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem; display:flex; align-items:center; gap:0.5rem;">🔴 КУПОН УЖЕ ПОГАШЕН</h4>
+          <p style="margin-bottom: 0.35rem;"><strong>Промокод:</strong> <code style="font-size:1.15rem; font-weight:800; background:#ffffff; padding:0.2rem 0.5rem; border-radius:6px; border:1px solid #fca5a5;">${escapeHtml(coupon.code)}</code></p>
+          <p style="margin-bottom: 0.35rem;"><strong>Выбранное заведение:</strong> ${escapeHtml(coupon.partnerName)}</p>
+          <p style="margin-bottom: 0.35rem;"><strong>Погашено в:</strong> ${escapeHtml(coupon.usedByPartner || coupon.partnerName)} (${usedStr})</p>
+          <p style="font-weight: 700; color: #7f1d1d; margin-top: 0.75rem;">⚠️ Данный купон был использован ранее. Повторное списание невозможно!</p>
+        </div>
+      `;
+    } else {
+      resultBox.innerHTML = `
+        <div style="background: #dcfce7; color: #166534; border: 1px solid #86efac; padding: 1.5rem; border-radius: 12px;">
+          <h4 style="font-size: 1.2rem; margin-bottom: 0.5rem; display:flex; align-items:center; gap:0.5rem;">🟢 КУПОН АКТИВЕН И ДЕЙСТВИТЕЛЕН</h4>
+          <p style="margin-bottom: 0.35rem;"><strong>Промокод:</strong> <code style="font-size:1.15rem; font-weight:800; background:#ffffff; padding:0.2rem 0.5rem; border-radius:6px; border:1px solid #86efac;">${escapeHtml(coupon.code)}</code></p>
+          <p style="margin-bottom: 0.35rem;"><strong>Заведение:</strong> ${escapeHtml(coupon.partnerName)}</p>
+          <p style="margin-bottom: 0.35rem;"><strong>Скидка:</strong> ${escapeHtml(coupon.discount)}</p>
+          <p style="margin-bottom: 1rem; font-size: 0.85rem; opacity: 0.85;">Выдан: ${createdStr}</p>
+          
+          <div style="display: flex; gap: 1rem; align-items: center; background: #ffffff; padding: 1rem; border-radius: 8px; border: 1px solid #86efac;">
+            <span style="font-size:0.95rem; font-weight:700; color:#166534;">Подтвердить одноразовое списание:</span>
+            <button type="button" id="btnRedeemNow" class="action-btn" style="background: #15803d; color: #ffffff;">❌ Погасить купон сейчас</button>
+          </div>
+        </div>
+      `;
+
+      document.getElementById("btnRedeemNow").addEventListener("click", async () => {
+        const res = await window.EcoAnalytics.redeemCoupon(coupon.code, coupon.partnerName);
+        if (res.success) {
+          alert(`Купон ${coupon.code} успешно погашен!`);
+          form.dispatchEvent(new Event("submit"));
+          loadCouponsData();
+        } else {
+          alert(`Ошибка: ${res.error}`);
+        }
+      });
+    }
+  });
+}
+
+async function loadCouponsData() {
+  const tableBody = document.querySelector("#tableCouponsLog tbody");
+  if (!tableBody) return;
+
+  const coupons = await window.EcoAnalytics.fetchAllCoupons();
+  coupons.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+  if (!coupons.length) {
+    tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">Выданных купонов пока нет</td></tr>`;
+    return;
+  }
+
+  tableBody.innerHTML = coupons.map(c => {
+    const createdStr = c.createdAt ? new Date(c.createdAt).toLocaleString("ru-RU") : "-";
+    const usedStr = c.usedAt ? new Date(c.usedAt).toLocaleString("ru-RU") : "-";
+    const statusHtml = c.used 
+      ? `<span style="color:#991b1b; font-weight:800; background:#fee2e2; padding:0.2rem 0.6rem; border-radius:99px;">ПОГАШЕН</span>`
+      : `<span style="color:#166534; font-weight:800; background:#dcfce7; padding:0.2rem 0.6rem; border-radius:99px;">АКТИВЕН</span>`;
+
+    return `
+      <tr>
+        <td>${createdStr}</td>
+        <td><code>${escapeHtml(c.code)}</code></td>
+        <td><strong>${escapeHtml(c.partnerName || "-")}</strong></td>
+        <td>${escapeHtml(c.discount || "-")}</td>
+        <td>${statusHtml}</td>
+        <td>${usedStr}</td>
+        <td>${escapeHtml(c.usedByPartner || "-")}</td>
+      </tr>
+    `;
+  }).join("");
 }

@@ -46,6 +46,7 @@
         </div>
         <nav class="sidebar-nav">
           <a href="#summary" class="nav-item active" data-tab="summary">Обзор</a>
+          <a href="#coupons" class="nav-item" data-tab="coupons">Проверка купонов</a>
           <a href="#questions" class="nav-item" data-tab="questions">Анализ вопросов</a>
           <a href="#logs" class="nav-item" data-tab="logs">Журнал визитов</a>
         </nav>
@@ -348,6 +349,46 @@
               <div class="pagination-controls">
                 <button class="pagination-btn" id="btnPagePrev" disabled>&larr; Назад</button>
                 <button class="pagination-btn" id="btnPageNext" disabled>Вперед &rarr;</button>
+              </div>
+            </div>
+        <!-- Tab: Coupon Validation & Redemption -->
+        <div class="tab-pane" id="pane-coupons">
+          <div class="details-card">
+            <div class="card-header">
+              <div>
+                <h3>🎟️ Проверка и гашение купонов</h3>
+                <p>Единоразовое списание скидочных промокодов партнеров</p>
+              </div>
+            </div>
+            
+            <div style="padding: 1.5rem;">
+              <form id="couponLookupForm" style="display: flex; gap: 1rem; align-items: center; max-width: 600px; margin-bottom: 1.5rem;">
+                <input type="text" id="couponCodeInput" placeholder="Введите код купона (например EQ-849201)" style="flex: 1; padding: 0.75rem 1rem; border: 1px solid var(--border); border-radius: var(--radius); font-size: 1.1rem; font-family: monospace; font-weight: 700; text-transform: uppercase;" required />
+                <button type="submit" class="action-btn">Проверить</button>
+              </form>
+
+              <div id="couponSearchResult" class="hidden" style="margin-bottom: 2rem;"></div>
+
+              <h4 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--ink);">Реестр выданных купонов</h4>
+              <div class="table-scroll">
+                <table class="report-table" id="tableCouponsLog">
+                  <thead>
+                    <tr>
+                      <th>Время выдачи</th>
+                      <th>Код купона</th>
+                      <th>Выбранное заведение</th>
+                      <th>Скидка</th>
+                      <th>Статус</th>
+                      <th>Дата погашения</th>
+                      <th>Погашено в</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td colspan="7" class="empty-state">Загрузка купонов...</td>
+                    </tr>
+                  </tbody>
+                </table>
               </div>
             </div>
           </div>

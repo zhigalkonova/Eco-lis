@@ -195,14 +195,22 @@
                   <h3 id="couponTitle"></h3>
                 </div>
                 <p id="couponText"></p>
-                <button class="primary-button" id="claimCouponButton" type="button"></button>
+                
+                <!-- Partner Selector Grid -->
+                <div class="partner-selector-box" id="partnerSelectorBox">
+                  <h4 class="partner-select-title" id="partnerSelectTitle">Выберите 1 заведение для применения скидки:</h4>
+                  <div class="partner-grid" id="partnerGrid"></div>
+                </div>
+
+                <button class="primary-button" id="claimCouponButton" type="button" disabled></button>
                 
                 <div class="coupon-code-box hidden" id="couponCodeBox">
                   <span class="coupon-label" id="couponLabel"></span>
                   <div class="coupon-input-group">
-                    <code class="coupon-code" id="couponCode">ECOQR2026</code>
+                    <code class="coupon-code" id="couponCode">EQ-849201</code>
                     <button class="ghost-button" id="copyCouponButton" type="button"></button>
                   </div>
+                  <div id="couponStatusBadgeWrapper"></div>
                   <p class="coupon-expiry" id="couponExpiry"></p>
                 </div>
               </div>

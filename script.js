@@ -7,7 +7,39 @@ const STORAGE_KEYS = {
   language: "ecoQrLanguage",
   videoWatched: "ecoQrVideoWatched",
   coupon: "ecoQrCouponClaimed",
+  couponData: "ecoQrCouponData",
 };
+
+const PARTNERS = [
+  {
+    id: "coffee",
+    icon: "☕",
+    name: { ru: "Кофейня «Тобол»", kk: "«Тобыл» кофеханасы" },
+    discount: "20%",
+    desc: { ru: "Скидка 20% на кофе, чай и десерты", kk: "Кофе, шай және десерттерге 20% жеңілдік" }
+  },
+  {
+    id: "fok",
+    icon: "🏋️",
+    name: { ru: "ФОК Лисаковск", kk: "Лисаковск ДСК" },
+    discount: "20%",
+    desc: { ru: "Скидка 20% на бассейн и тренажерный зал", kk: "Бассейнге немесе спортзалға 20% жеңілдік" }
+  },
+  {
+    id: "ecomarket",
+    icon: "🍏",
+    name: { ru: "Эко-Маркет «Жасыл»", kk: "«Жасыл» Эко-Маркеті" },
+    discount: "15%",
+    desc: { ru: "Скидка 15% на всю эко-продукцию", kk: "Барлық эко-өнімдерге 15% жеңілдік" }
+  },
+  {
+    id: "culture",
+    icon: "🎭",
+    name: { ru: "Дворец культуры", kk: "Мәдениет сарайы" },
+    discount: "20%",
+    desc: { ru: "Скидка 20% на билеты мероприятий", kk: "Мәдени іс-шаралар билеттеріне 20% жеңілдік" }
+  }
+];
 
 // Web Audio API Synthesizer for Quiz Game Tones
 const AudioSynth = {
@@ -514,11 +546,15 @@ function cacheDom() {
     "couponBadge",
     "couponTitle",
     "couponText",
+    "partnerSelectorBox",
+    "partnerSelectTitle",
+    "partnerGrid",
     "claimCouponButton",
     "couponCodeBox",
     "couponLabel",
     "couponCode",
     "copyCouponButton",
+    "couponStatusBadgeWrapper",
     "couponExpiry",
     "rudnyScreen",
     "rudnyEyebrow",
@@ -598,17 +634,123 @@ function selectLanguage(lang) {
 }
 
 async function claimCoupon() {
-  dom.claimCouponButton.disabled = true;
-  dom.claimCouponButton.textContent = getCopy().coupon.claimed;
+  if (!state.selectedPartner) return;
 
+  dom.claimCouponButton.disabled = true;
+  dom.claimCouponButton.textContent = "Сохранение...";
+
+  const partnerName = getLocalizedText(state.selectedPartner.name);
+  const randomDigits = Math.floor(100000 + Math.random() * 900000);
+  const code = `EQ-${randomDigits}`;
+
+  const couponData = {
+    code,
+    partnerId: state.selectedPartner.id,
+    partnerName,
+    discount: state.selectedPartner.discount,
+    used: false
+  };
+
+  localStorage.setItem(STORAGE_KEYS.coupon, "true");
+  localStorage.setItem(STORAGE_KEYS.couponData, JSON.stringify(couponData));
+
+  await window.EcoAnalytics.createCoupon(couponData);
   await window.EcoAnalytics.updateAnalytics({
     coupon: true,
     couponTime: new Date().toISOString()
   });
-  localStorage.setItem(STORAGE_KEYS.coupon, "true");
 
-  dom.couponCodeBox.classList.remove("hidden");
-  dom.claimCouponButton.classList.add("hidden");
+  await renderCouponSection();
+}
+
+async function renderCouponSection() {
+  const copy = getCopy();
+  dom.couponBadge.textContent = copy.coupon.badge;
+  dom.couponTitle.textContent = copy.coupon.title;
+  dom.couponText.textContent = copy.coupon.text;
+  dom.couponLabel.textContent = copy.coupon.codeLabel;
+  dom.copyCouponButton.textContent = copy.coupon.copyBtn;
+  dom.couponExpiry.textContent = copy.coupon.expiry;
+
+  let savedCouponData = null;
+  try {
+    savedCouponData = JSON.parse(localStorage.getItem(STORAGE_KEYS.couponData) || "null");
+  } catch (e) {}
+
+  if (savedCouponData && savedCouponData.code) {
+    dom.partnerSelectorBox.classList.add("hidden");
+    dom.claimCouponButton.classList.add("hidden");
+    dom.couponCodeBox.classList.remove("hidden");
+    dom.couponCode.textContent = savedCouponData.code;
+
+    const liveCoupon = await window.EcoAnalytics.getCoupon(savedCouponData.code);
+    const isUsed = liveCoupon ? liveCoupon.used : savedCouponData.used;
+    const partnerName = (liveCoupon && liveCoupon.partnerName) || savedCouponData.partnerName;
+    const usedBy = (liveCoupon && liveCoupon.usedByPartner) || partnerName;
+    const usedAtDate = liveCoupon && liveCoupon.usedAt ? new Date(liveCoupon.usedAt).toLocaleString('ru-RU') : '';
+
+    if (isUsed) {
+      dom.couponStatusBadgeWrapper.innerHTML = `
+        <div class="coupon-status-badge used">
+          🔴 ПОГАШЕН (${escapeHtml(usedBy)}${usedAtDate ? ' ' + usedAtDate : ''})
+        </div>
+      `;
+    } else {
+      dom.couponStatusBadgeWrapper.innerHTML = `
+        <div class="coupon-status-badge active">
+          🟢 АКТИВЕН — ${escapeHtml(partnerName)} (Единоразовое списание)
+        </div>
+      `;
+    }
+  } else {
+    dom.couponCodeBox.classList.add("hidden");
+    dom.partnerSelectorBox.classList.remove("hidden");
+    dom.claimCouponButton.classList.remove("hidden");
+    dom.claimCouponButton.disabled = true;
+    dom.claimCouponButton.textContent = state.lang === "kk" ? "Жоғарыдан мекемені таңдаңыз" : "Выберите заведение выше";
+    state.selectedPartner = null;
+
+    renderPartnerGrid();
+  }
+}
+
+function renderPartnerGrid() {
+  const selectTitle = state.lang === "kk" 
+    ? "Жеңілдікті қолдану үшін 4 серіктестің 1 мекемесін таңдаңыз:" 
+    : "Выберите 1 заведение из 4 партнеров для применения скидки:";
+  dom.partnerSelectTitle.textContent = selectTitle;
+
+  dom.partnerGrid.innerHTML = PARTNERS.map(partner => {
+    const isSelected = state.selectedPartner?.id === partner.id;
+    const partnerName = getLocalizedText(partner.name);
+    const desc = getLocalizedText(partner.desc);
+    return `
+      <div class="partner-card ${isSelected ? 'selected' : ''}" data-partner-id="${partner.id}">
+        <div>
+          <div class="partner-card-icon">${partner.icon}</div>
+          <div class="partner-card-title">${escapeHtml(partnerName)}</div>
+          <span class="partner-card-discount">Скидка ${partner.discount}</span>
+        </div>
+        <div class="partner-card-desc">${escapeHtml(desc)}</div>
+      </div>
+    `;
+  }).join("");
+
+  dom.partnerGrid.querySelectorAll(".partner-card").forEach(card => {
+    card.addEventListener("click", () => {
+      const pId = card.dataset.partnerId;
+      state.selectedPartner = PARTNERS.find(p => p.id === pId);
+      renderPartnerGrid();
+      if (state.selectedPartner) {
+        const partnerName = getLocalizedText(state.selectedPartner.name);
+        dom.claimCouponButton.disabled = false;
+        const btnText = state.lang === "kk"
+          ? `${partnerName} үшін жеңілдік алу`
+          : `Получить скидку ${state.selectedPartner.discount} в ${partnerName}`;
+        dom.claimCouponButton.textContent = btnText;
+      }
+    });
+  });
 }
 
 function copyCouponCode() {
@@ -1106,22 +1248,7 @@ function renderResult(level, score) {
       }
       navigator.vibrate?.([100, 50, 100, 50, 200]);
     } catch (e) {}
-    dom.couponBadge.textContent = copy.coupon.badge;
-    dom.couponTitle.textContent = copy.coupon.title;
-    dom.couponText.textContent = copy.coupon.text;
-    dom.claimCouponButton.textContent = copy.coupon.claimBtn;
-    dom.couponLabel.textContent = copy.coupon.codeLabel;
-    dom.copyCouponButton.textContent = copy.coupon.copyBtn;
-    dom.couponExpiry.textContent = copy.coupon.expiry;
-
-    const alreadyClaimed = localStorage.getItem(STORAGE_KEYS.coupon) === "true";
-    if (alreadyClaimed) {
-      dom.couponCodeBox.classList.remove("hidden");
-      dom.claimCouponButton.classList.add("hidden");
-    } else {
-      dom.couponCodeBox.classList.add("hidden");
-      dom.claimCouponButton.classList.remove("hidden");
-    }
+    renderCouponSection();
   }
 
   dom.resultEyebrow.textContent = copy.result.eyebrow;

@@ -409,6 +409,112 @@
     console.log(`Generated ${count} simulated visit logs in local database.`);
   }
 
+  // COUPON MANAGEMENT METHODS
+  async function createCoupon(couponData) {
+    const coupon = {
+      code: couponData.code.toUpperCase(),
+      partnerId: couponData.partnerId,
+      partnerName: couponData.partnerName,
+      discount: couponData.discount,
+      createdAt: new Date().toISOString(),
+      visitId: currentVisitId,
+      used: false,
+      usedAt: null,
+      usedByPartner: null
+    };
+
+    if (db) {
+      try {
+        await db.collection("coupons").doc(coupon.code).set(coupon);
+      } catch (err) {
+        console.warn("Firestore error on createCoupon, storing mock:", err);
+      }
+    }
+
+    let mockCoupons = JSON.parse(localStorage.getItem("ecoQrMockDb_coupons") || "[]");
+    mockCoupons = mockCoupons.filter(c => c.code !== coupon.code);
+    mockCoupons.push(coupon);
+    localStorage.setItem("ecoQrMockDb_coupons", JSON.stringify(mockCoupons));
+    return coupon;
+  }
+
+  async function getCoupon(code) {
+    if (!code) return null;
+    const cleanCode = code.trim().toUpperCase();
+
+    if (db) {
+      try {
+        const doc = await db.collection("coupons").doc(cleanCode).get();
+        if (doc.exists) {
+          return doc.data();
+        }
+      } catch (err) {
+        console.warn("Firestore error on getCoupon, checking mock:", err);
+      }
+    }
+
+    let mockCoupons = JSON.parse(localStorage.getItem("ecoQrMockDb_coupons") || "[]");
+    return mockCoupons.find(c => c.code === cleanCode) || null;
+  }
+
+  async function redeemCoupon(code, redeemingPartner) {
+    if (!code) return { success: false, error: "Код не указан" };
+    const cleanCode = code.trim().toUpperCase();
+    const existing = await getCoupon(cleanCode);
+
+    if (!existing) {
+      return { success: false, error: "Купон с таким кодом не найден!" };
+    }
+
+    if (existing.used) {
+      const formattedDate = existing.usedAt ? new Date(existing.usedAt).toLocaleString('ru-RU') : '';
+      return { 
+        success: false, 
+        error: `Купон уже был погашен ${formattedDate} в ${existing.usedByPartner || 'заведении'}` 
+      };
+    }
+
+    const updateFields = {
+      used: true,
+      usedAt: new Date().toISOString(),
+      usedByPartner: redeemingPartner || existing.partnerName
+    };
+
+    if (db) {
+      try {
+        await db.collection("coupons").doc(cleanCode).update(updateFields);
+      } catch (err) {
+        console.warn("Firestore error on redeemCoupon:", err);
+      }
+    }
+
+    let mockCoupons = JSON.parse(localStorage.getItem("ecoQrMockDb_coupons") || "[]");
+    const mock = mockCoupons.find(c => c.code === cleanCode);
+    if (mock) {
+      Object.assign(mock, updateFields);
+      localStorage.setItem("ecoQrMockDb_coupons", JSON.stringify(mockCoupons));
+    }
+
+    return { 
+      success: true, 
+      coupon: { ...existing, ...updateFields } 
+    };
+  }
+
+  async function fetchAllCoupons() {
+    if (db) {
+      try {
+        const snapshot = await db.collection("coupons").get();
+        const coupons = [];
+        snapshot.forEach(doc => coupons.push(doc.data()));
+        return coupons;
+      } catch (err) {
+        console.warn("Firestore error on fetchAllCoupons:", err);
+      }
+    }
+    return JSON.parse(localStorage.getItem("ecoQrMockDb_coupons") || "[]");
+  }
+
   // Export functions to window object
   window.EcoAnalytics = {
     initAnalytics,
@@ -417,6 +523,10 @@
     fetchVisits,
     generateMockVisits,
     clearMockDatabase,
+    createCoupon,
+    getCoupon,
+    redeemCoupon,
+    fetchAllCoupons,
     isMockMode: () => !isFirebaseConfigured,
     getCurrentVisitId: () => currentVisitId
   };
