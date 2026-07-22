@@ -1213,6 +1213,13 @@ function finishQuiz() {
   const quiz = state.quiz;
   const duration = Math.round((Date.now() - state.quizStartTime) / 1000);
 
+  if (duration < 5) {
+    console.warn("Quiz completion speed anomaly detected. Potential bot activity.");
+    state.isBotSuspicion = true;
+  } else {
+    state.isBotSuspicion = false;
+  }
+
   if (quiz.level === "easy") {
     state.lastEasyScore = quiz.score;
   }
@@ -1229,7 +1236,7 @@ function renderResult(level, score) {
   dom.couponContainer.classList.add("hidden");
 
   const totalScore = (state.lastEasyScore || 0) + score;
-  if (level === "medium" && totalScore >= 16) {
+  if (level === "medium" && totalScore >= 16 && !state.isBotSuspicion) {
     dom.couponContainer.classList.remove("hidden");
     const couponCard = dom.couponContainer.querySelector(".coupon-card");
     if (couponCard) {

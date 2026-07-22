@@ -13,9 +13,19 @@ document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("btnClearDB").addEventListener("click", clearDatabase);
 });
 
-// PASSCODE GATE SECURITY
-const PASSCODE = "admin123";
+// PASSCODE GATE SECURITY (SHA-256 Hash + Brute-Force Rate Limiting)
+const PASSCODE_HASH = "240be518fabd2724ddb6f04eeb1da5967448d7e831c08c8fa822809f74c720a9"; // SHA-256 hash
 let visitsData = [];
+let failedAttempts = 0;
+let lockoutUntil = 0;
+
+async function hashSha256(text) {
+  const encoder = new TextEncoder();
+  const data = encoder.encode(text);
+  const hashBuffer = await crypto.subtle.digest("SHA-256", data);
+  const hashArray = Array.from(new Uint8Array(hashBuffer));
+  return hashArray.map(b => b.toString(16).padStart(2, "0")).join("");
+}
 
 function initAuth() {
   const authForm = document.getElementById("authForm");
@@ -35,15 +45,33 @@ function initAuth() {
     }
   };
 
-  authForm.addEventListener("submit", (e) => {
+  authForm.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    if (Date.now() < lockoutUntil) {
+      const remaining = Math.ceil((lockoutUntil - Date.now()) / 1000);
+      authError.textContent = `Слишком много неверных попыток! Попробуйте через ${remaining} сек.`;
+      authError.classList.remove("hidden");
+      return;
+    }
+
     const input = document.getElementById("passcodeInput").value;
-    if (input === PASSCODE) {
+    const inputHash = await hashSha256(input);
+
+    if (inputHash === PASSCODE_HASH) {
+      failedAttempts = 0;
       sessionStorage.setItem("adminAuth", "true");
       authError.classList.add("hidden");
       document.getElementById("passcodeInput").value = "";
       checkAccess();
     } else {
+      failedAttempts++;
+      if (failedAttempts >= 3) {
+        lockoutUntil = Date.now() + 30000;
+        authError.textContent = "Слишком много неверных попыток! Доступ заблокирован на 30 секунд.";
+      } else {
+        authError.textContent = `Неверный код доступа! Осталось попыток: ${3 - failedAttempts}`;
+      }
       authError.classList.remove("hidden");
     }
   });
