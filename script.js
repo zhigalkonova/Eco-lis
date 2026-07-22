@@ -74,7 +74,7 @@ const AudioSynth = {
 const COPY = {
   ru: {
     code: "RU",
-    brand: "Eco QR: Лисаковск",
+    brand: "EcoQadam: Лисаковск",
     changeLanguage: "Сменить язык",
     info: {
       eyebrow: "Интересные факты о городе",
@@ -261,7 +261,7 @@ const COPY = {
   },
   kk: {
     code: "KZ",
-    brand: "Eco QR: Лисаковск",
+    brand: "EcoQadam: Лисаковск",
     changeLanguage: "Тілді ауыстыру",
     info: {
       eyebrow: "Қала туралы қызықты деректер",
