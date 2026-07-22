@@ -2,10 +2,7 @@
 
 const QUESTION_COUNT = 10;
 const PASS_SCORE = 8;
-const VIDEO_IDS = {
-  ru: "UZzhOxBURII", // ID видео на русском
-  kk: "UEfmIArk1_s", // ID видео на казахском (Қазақша)
-};
+const VIDEO_ID = "UZzhOxBURII"; // Единое видео для обоих языков
 const STORAGE_KEYS = {
   language: "ecoQrLanguage",
   videoWatched: "ecoQrVideoWatched",
@@ -823,7 +820,7 @@ function loadYouTubePlayer() {
 function createYouTubePlayer() {
   clearTimeout(state.playerLoadTimer);
 
-  const videoId = VIDEO_IDS[state.lang] || VIDEO_IDS.ru;
+  const videoId = VIDEO_ID;
 
   if (state.player) {
     const { video } = getCopy();
