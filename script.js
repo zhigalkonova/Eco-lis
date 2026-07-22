@@ -911,7 +911,19 @@ async function startQuiz(level) {
 
   try {
     const bank = await loadQuestionBank(level);
-    const selected = shuffle(bank).slice(0, QUESTION_COUNT).map(prepareQuestion);
+    state.askedQuestions = state.askedQuestions || {};
+    state.askedQuestions[level] = state.askedQuestions[level] || new Set();
+
+    let pool = bank.filter(q => !state.askedQuestions[level].has(q.question.ru || q.question));
+    if (pool.length < QUESTION_COUNT) {
+      state.askedQuestions[level].clear();
+      pool = [...bank];
+    }
+
+    const selectedRaw = shuffle(pool).slice(0, QUESTION_COUNT);
+    selectedRaw.forEach(q => state.askedQuestions[level].add(q.question.ru || q.question));
+
+    const selected = selectedRaw.map(prepareQuestion);
     state.quiz = {
       level,
       questions: selected,
@@ -943,8 +955,8 @@ async function loadQuestionBank(level) {
 }
 
 function validateQuestionBank(bank, level) {
-  if (!Array.isArray(bank) || bank.length < 100) {
-    throw new Error(`${level}.json must contain at least 100 questions`);
+  if (!Array.isArray(bank) || bank.length < 10) {
+    throw new Error(`${level}.json must contain at least 10 questions`);
   }
 
   bank.forEach((item, index) => {
