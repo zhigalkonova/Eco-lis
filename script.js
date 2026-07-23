@@ -16,7 +16,7 @@ const PARTNERS = [
     icon: "🎮",
     name: { ru: "Компьютерный клуб «LEGION»", kk: "«LEGION» компьютерлік клубы" },
     discount: "30%",
-    qrImage: "assets/images/partners/legion-qr.jpg",
+    qrImage: "assets/images/partners/legion-qr-clean.png",
     handle: "@LEGION_CYBER_LOUNGE",
     desc: { ru: "Скидка 30% на игровое время и услуги клуба", kk: "Ойын уақыты мен клуб қызметтеріне 30% жеңілдік" }
   },
@@ -25,7 +25,7 @@ const PARTNERS = [
     icon: "🎡",
     name: { ru: "Детский развлекательный парк Kinder park", kk: "«Kinder park» балалар ойын-сауық саябағы" },
     discount: "30%",
-    qrImage: "assets/images/partners/kinderpark-qr.jpg",
+    qrImage: "assets/images/partners/kinderpark-qr-clean.png",
     handle: "@KINDER_PARK_LSK",
     desc: { ru: "Скидка 30% на посещение парка и аттракционы", kk: "Саябаққа кіруге және аттракциондарға 30% жеңілдік" }
   },
@@ -34,7 +34,7 @@ const PARTNERS = [
     icon: "🧇",
     name: { ru: "Waffle Fox", kk: "Waffle Fox" },
     discount: "30%",
-    qrImage: "assets/images/partners/wafflefox-qr.jpg",
+    qrImage: "assets/images/partners/wafflefox-qr-clean.png",
     handle: "@WAFFLE.FOX.LSK",
     desc: { ru: "Скидка 30% на вафли и напитки", kk: "Вафлилер мен сусындарға 30% жеңілдік" }
   },
@@ -43,7 +43,7 @@ const PARTNERS = [
     icon: "🌯",
     name: { ru: "Doner Fox", kk: "Doner Fox" },
     discount: "30%",
-    qrImage: "assets/images/partners/donerfox-qr.jpg",
+    qrImage: "assets/images/partners/donerfox-qr-clean.png",
     handle: "@DONER.FOX.LSK",
     desc: { ru: "Скидка 30% на донеры и комбо-наборы", kk: "Донерлер мен комбо-жинақтарға 30% жеңілдік" }
   }
@@ -711,9 +711,8 @@ async function renderCouponSection() {
           🟢 АКТИВЕН — ${escapeHtml(partnerName)} (Скидка ${partner.discount})
         </div>
         <div class="coupon-qr-card-wrapper">
-          <div class="coupon-qr-title">Instagram QR заведения:</div>
-          <img src="${partner.qrImage}" alt="${escapeHtml(partnerName)} QR" class="coupon-qr-img" />
-          <div class="coupon-qr-handle">${escapeHtml(partner.handle)}</div>
+          <div class="coupon-qr-title">${state.lang === "kk" ? "Мекеменің Instagram QR-коды:" : "Instagram QR-код заведения:"}</div>
+          <img src="${partner.qrImage}" alt="${escapeHtml(partnerName)} QR" class="coupon-clean-qr-img" />
         </div>
       `;
     }
@@ -748,10 +747,6 @@ function renderPartnerGrid() {
           </div>
           <div class="partner-card-title">${escapeHtml(partnerName)}</div>
           <div class="partner-card-desc">${escapeHtml(desc)}</div>
-        </div>
-        <div class="partner-qr-preview">
-          <img src="${partner.qrImage}" alt="${escapeHtml(partnerName)} QR" class="partner-qr-thumb" />
-          <span class="partner-handle-tag">${escapeHtml(partner.handle)}</span>
         </div>
       </div>
     `;
