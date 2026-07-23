@@ -131,6 +131,10 @@ function initTabs() {
       
       // Reset scroll
       document.querySelector(".main-content").scrollTop = 0;
+
+      if (target === "coupons") {
+        loadCouponsData();
+      }
     });
   });
 }
@@ -166,6 +170,12 @@ function initDevTools() {
 let chartInstances = {};
 
 async function loadData() {
+  const btnRefresh = document.getElementById("btnRefresh");
+  if (btnRefresh) {
+    btnRefresh.disabled = true;
+    btnRefresh.textContent = "Загрузка...";
+  }
+
   const statusBadge = document.getElementById("dbStatusBadge");
   const statusText = document.getElementById("dbStatusText");
 
@@ -178,19 +188,29 @@ async function loadData() {
     statusText.textContent = "Firebase Подключен";
   }
 
-  // Fetch visit logs
-  visitsData = await window.EcoAnalytics.fetchVisits();
-  
-  // Sort visits by creation timestamp descending for logs view
-  visitsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  try {
+    // Parallel data fetching for maximum speed
+    const [visits] = await Promise.all([
+      window.EcoAnalytics.fetchVisits(),
+      loadCouponsData()
+    ]);
+    visitsData = visits || [];
+    
+    // Sort visits by creation timestamp descending for logs view
+    visitsData.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  // Trigger views builders
-  renderKPIs();
-  renderFunnelAndDurations();
-  renderCharts();
-  renderQuestionsAnalytics();
-  initLogsTable();
-  loadCouponsData();
+    // Trigger views builders
+    renderKPIs();
+    renderFunnelAndDurations();
+    renderCharts();
+    renderQuestionsAnalytics();
+    initLogsTable();
+  } finally {
+    if (btnRefresh) {
+      btnRefresh.disabled = false;
+      btnRefresh.textContent = "Обновить";
+    }
+  }
 }
 
 function renderKPIs() {
@@ -888,31 +908,36 @@ async function loadCouponsData() {
   const tableBody = document.querySelector("#tableCouponsLog tbody");
   if (!tableBody) return;
 
-  const coupons = await window.EcoAnalytics.fetchAllCoupons();
-  coupons.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  try {
+    const coupons = await window.EcoAnalytics.fetchAllCoupons();
+    coupons.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 
-  if (!coupons.length) {
-    tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">Выданных купонов пока нет</td></tr>`;
-    return;
+    if (!coupons.length) {
+      tableBody.innerHTML = `<tr><td colspan="7" class="empty-state">Выданных купонов пока нет</td></tr>`;
+      return;
+    }
+
+    tableBody.innerHTML = coupons.map(c => {
+      const createdStr = c.createdAt ? new Date(c.createdAt).toLocaleString("ru-RU") : "-";
+      const usedStr = c.usedAt ? new Date(c.usedAt).toLocaleString("ru-RU") : "-";
+      const statusHtml = c.used 
+        ? `<span style="color:#991b1b; font-weight:800; background:#fee2e2; padding:0.2rem 0.6rem; border-radius:99px;">ПОГАШЕН</span>`
+        : `<span style="color:#166534; font-weight:800; background:#dcfce7; padding:0.2rem 0.6rem; border-radius:99px;">АКТИВЕН</span>`;
+
+      return `
+        <tr>
+          <td>${createdStr}</td>
+          <td><code>${escapeHtml(c.code)}</code></td>
+          <td><strong>${escapeHtml(c.partnerName || "-")}</strong></td>
+          <td>${escapeHtml(c.discount || "-")}</td>
+          <td>${statusHtml}</td>
+          <td>${usedStr}</td>
+          <td>${escapeHtml(c.usedByPartner || "-")}</td>
+        </tr>
+      `;
+    }).join("");
+  } catch (err) {
+    console.error("Error loading coupons:", err);
+    tableBody.innerHTML = `<tr><td colspan="7" class="empty-state" style="color:red;">Ошибка загрузки купонов из базы данных</td></tr>`;
   }
-
-  tableBody.innerHTML = coupons.map(c => {
-    const createdStr = c.createdAt ? new Date(c.createdAt).toLocaleString("ru-RU") : "-";
-    const usedStr = c.usedAt ? new Date(c.usedAt).toLocaleString("ru-RU") : "-";
-    const statusHtml = c.used 
-      ? `<span style="color:#991b1b; font-weight:800; background:#fee2e2; padding:0.2rem 0.6rem; border-radius:99px;">ПОГАШЕН</span>`
-      : `<span style="color:#166534; font-weight:800; background:#dcfce7; padding:0.2rem 0.6rem; border-radius:99px;">АКТИВЕН</span>`;
-
-    return `
-      <tr>
-        <td>${createdStr}</td>
-        <td><code>${escapeHtml(c.code)}</code></td>
-        <td><strong>${escapeHtml(c.partnerName || "-")}</strong></td>
-        <td>${escapeHtml(c.discount || "-")}</td>
-        <td>${statusHtml}</td>
-        <td>${usedStr}</td>
-        <td>${escapeHtml(c.usedByPartner || "-")}</td>
-      </tr>
-    `;
-  }).join("");
 }

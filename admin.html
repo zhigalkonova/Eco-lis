@@ -7,13 +7,13 @@
     <title>EcoQadam | Панель управления</title>
     <link rel="stylesheet" href="admin.css" />
     <!-- Load Chart.js for visualizations -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
     <!-- Load Firebase compat SDKs -->
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js" defer></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js" defer></script>
     <!-- Config and core analytics service -->
-    <script src="firebase-config.js"></script>
-    <script src="firebase.js"></script>
+    <script src="firebase-config.js" defer></script>
+    <script src="firebase.js" defer></script>
     <!-- Admin panel controller -->
     <script src="admin.js" defer></script>
   </head>
@@ -352,6 +352,9 @@
                 <button class="pagination-btn" id="btnPageNext" disabled>Вперед &rarr;</button>
               </div>
             </div>
+          </div>
+        </div>
+
         <!-- Tab: Coupon Validation & Redemption -->
         <div class="tab-pane" id="pane-coupons">
           <div class="details-card">
