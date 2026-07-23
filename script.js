@@ -2,7 +2,7 @@
 
 const QUESTION_COUNT = 10;
 const PASS_SCORE = 8;
-const VIDEO_ID = "QR2bG2Ahpr4"; // Единое видео для обоих языков
+const VIDEO_ID = "Zzr3eAygOVQ"; // Единое видео для обоих языков
 const STORAGE_KEYS = {
   language: "ecoQrLanguage",
   videoWatched: "ecoQrVideoWatched",
