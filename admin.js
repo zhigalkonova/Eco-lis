@@ -782,14 +782,7 @@ function exportCSV() {
 }
 
 async function clearDatabase() {
-  if (!confirm("Вы действительно хотите БЕЗВОЗВРАТНО удалить все записи из базы данных?")) {
-    return;
-  }
-
-  if (window.EcoAnalytics.isMockMode()) {
-    window.EcoAnalytics.clearMockDatabase();
-    await loadData();
-    alert("Локальная база данных успешно очищена.");
+  if (!confirm("Вы действительно хотите БЕЗВОЗВРАТНО очистить ВСЮ базу данных (визиты и выданные купоны)?")) {
     return;
   }
 
@@ -799,29 +792,12 @@ async function clearDatabase() {
   btn.textContent = "Очистка...";
 
   try {
-    const isConfigured = window.firebaseConfig && window.firebaseConfig.apiKey && window.firebaseConfig.apiKey !== "YOUR_API_KEY";
-    if (isConfigured && window.firebase) {
-      const db = window.firebase.firestore();
-      const snapshot = await db.collection("visits").get();
-      const batch = db.batch();
-      
-      let count = 0;
-      snapshot.forEach(doc => {
-        batch.delete(doc.ref);
-        count++;
-      });
-
-      if (count > 0) {
-        await batch.commit();
-      }
-      alert(`Облачная база данных Firestore успешно очищена. Удалено документов: ${count}`);
-    } else {
-      alert("Firebase не инициализирован.");
-    }
+    const res = await window.EcoAnalytics.clearFullDatabase();
+    alert(`База данных полностью очищена!\n• Удалено визитов: ${res.deletedVisits}\n• Удалено купонов: ${res.deletedCoupons}`);
     await loadData();
   } catch (error) {
-    console.error("Ошибка при удалении документов:", error);
-    alert("Не удалось очистить базу данных. Проверьте права доступа в консоли Firebase (Firestore Rules). Для удаления разрешите 'delete' или 'write' в правилах безопасности Firestore.");
+    console.error("Ошибка при очистке базы данных:", error);
+    alert("Не удалось полностью очистить базу данных. Убедитесь, что в правилах Firebase (Firestore Rules) разрешены операции удаления 'delete' или 'write'.");
   } finally {
     btn.disabled = false;
     btn.textContent = origText;

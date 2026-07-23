@@ -248,6 +248,49 @@
   // Clear mock databases
   function clearMockDatabase() {
     localStorage.removeItem("ecoQrMockDb_visits");
+    localStorage.removeItem("ecoQrMockDb_coupons");
+    localStorage.removeItem("ecoQrCouponClaimed");
+    localStorage.removeItem("ecoQrCouponData");
+  }
+
+  async function clearFullDatabase() {
+    let deletedVisits = 0;
+    let deletedCoupons = 0;
+
+    if (db) {
+      // 1. Delete all documents in visits collection
+      try {
+        const visitsSnap = await db.collection("visits").get();
+        const docs = visitsSnap.docs;
+        for (let i = 0; i < docs.length; i += 400) {
+          const batch = db.batch();
+          const chunk = docs.slice(i, i + 400);
+          chunk.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+        }
+        deletedVisits = docs.length;
+      } catch (err) {
+        console.warn("Error deleting visits from Firestore:", err);
+      }
+
+      // 2. Delete all documents in coupons collection
+      try {
+        const couponsSnap = await db.collection("coupons").get();
+        const docs = couponsSnap.docs;
+        for (let i = 0; i < docs.length; i += 400) {
+          const batch = db.batch();
+          const chunk = docs.slice(i, i + 400);
+          chunk.forEach(doc => batch.delete(doc.ref));
+          await batch.commit();
+        }
+        deletedCoupons = docs.length;
+      } catch (err) {
+        console.warn("Error deleting coupons from Firestore:", err);
+      }
+    }
+
+    clearMockDatabase();
+    return { deletedVisits, deletedCoupons };
   }
 
   // Populate mock data with rich user activities for testing/verification
@@ -527,6 +570,7 @@
     fetchVisits,
     generateMockVisits,
     clearMockDatabase,
+    clearFullDatabase,
     createCoupon,
     getCoupon,
     redeemCoupon,
