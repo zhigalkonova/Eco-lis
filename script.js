@@ -12,32 +12,40 @@ const STORAGE_KEYS = {
 
 const PARTNERS = [
   {
-    id: "coffee",
-    icon: "☕",
-    name: { ru: "Кофейня «Тобол»", kk: "«Тобыл» кофеханасы" },
-    discount: "20%",
-    desc: { ru: "Скидка 20% на кофе, чай и десерты", kk: "Кофе, шай және десерттерге 20% жеңілдік" }
+    id: "legion",
+    icon: "🎮",
+    name: { ru: "Компьютерный клуб «LEGION»", kk: "«LEGION» компьютерлік клубы" },
+    discount: "30%",
+    qrImage: "assets/images/partners/legion-qr.jpg",
+    handle: "@LEGION_CYBER_LOUNGE",
+    desc: { ru: "Скидка 30% на игровое время и услуги клуба", kk: "Ойын уақыты мен клуб қызметтеріне 30% жеңілдік" }
   },
   {
-    id: "fok",
-    icon: "🏋️",
-    name: { ru: "ФОК Лисаковск", kk: "Лисаковск ДСК" },
-    discount: "20%",
-    desc: { ru: "Скидка 20% на бассейн и тренажерный зал", kk: "Бассейнге немесе спортзалға 20% жеңілдік" }
+    id: "kinderpark",
+    icon: "🎡",
+    name: { ru: "Детский развлекательный парк Kinder park", kk: "«Kinder park» балалар ойын-сауық саябағы" },
+    discount: "30%",
+    qrImage: "assets/images/partners/kinderpark-qr.jpg",
+    handle: "@KINDER_PARK_LSK",
+    desc: { ru: "Скидка 30% на посещение парка и аттракционы", kk: "Саябаққа кіруге және аттракциондарға 30% жеңілдік" }
   },
   {
-    id: "ecomarket",
-    icon: "🍏",
-    name: { ru: "Эко-Маркет «Жасыл»", kk: "«Жасыл» Эко-Маркеті" },
-    discount: "15%",
-    desc: { ru: "Скидка 15% на всю эко-продукцию", kk: "Барлық эко-өнімдерге 15% жеңілдік" }
+    id: "wafflefox",
+    icon: "🧇",
+    name: { ru: "Waffle Fox", kk: "Waffle Fox" },
+    discount: "30%",
+    qrImage: "assets/images/partners/wafflefox-qr.jpg",
+    handle: "@WAFFLE.FOX.LSK",
+    desc: { ru: "Скидка 30% на вафли и напитки", kk: "Вафлилер мен сусындарға 30% жеңілдік" }
   },
   {
-    id: "culture",
-    icon: "🎭",
-    name: { ru: "Дворец культуры", kk: "Мәдениет сарайы" },
-    discount: "20%",
-    desc: { ru: "Скидка 20% на билеты мероприятий", kk: "Мәдени іс-шаралар билеттеріне 20% жеңілдік" }
+    id: "donerfox",
+    icon: "🌯",
+    name: { ru: "Doner Fox", kk: "Doner Fox" },
+    discount: "30%",
+    qrImage: "assets/images/partners/donerfox-qr.jpg",
+    handle: "@DONER.FOX.LSK",
+    desc: { ru: "Скидка 30% на донеры и комбо-наборы", kk: "Донерлер мен комбо-жинақтарға 30% жеңілдік" }
   }
 ];
 
@@ -689,6 +697,8 @@ async function renderCouponSection() {
     const usedBy = (liveCoupon && liveCoupon.usedByPartner) || partnerName;
     const usedAtDate = liveCoupon && liveCoupon.usedAt ? new Date(liveCoupon.usedAt).toLocaleString('ru-RU') : '';
 
+    const partner = PARTNERS.find(p => p.id === savedCouponData.partnerId) || PARTNERS.find(p => p.name.ru === partnerName || p.name.kk === partnerName) || PARTNERS[0];
+
     if (isUsed) {
       dom.couponStatusBadgeWrapper.innerHTML = `
         <div class="coupon-status-badge used">
@@ -698,7 +708,12 @@ async function renderCouponSection() {
     } else {
       dom.couponStatusBadgeWrapper.innerHTML = `
         <div class="coupon-status-badge active">
-          🟢 АКТИВЕН — ${escapeHtml(partnerName)} (Единоразовое списание)
+          🟢 АКТИВЕН — ${escapeHtml(partnerName)} (Скидка ${partner.discount})
+        </div>
+        <div class="coupon-qr-card-wrapper">
+          <div class="coupon-qr-title">Instagram QR заведения:</div>
+          <img src="${partner.qrImage}" alt="${escapeHtml(partnerName)} QR" class="coupon-qr-img" />
+          <div class="coupon-qr-handle">${escapeHtml(partner.handle)}</div>
         </div>
       `;
     }
@@ -727,11 +742,17 @@ function renderPartnerGrid() {
     return `
       <div class="partner-card ${isSelected ? 'selected' : ''}" data-partner-id="${partner.id}">
         <div>
-          <div class="partner-card-icon">${partner.icon}</div>
+          <div class="partner-card-header">
+            <span class="partner-card-icon">${partner.icon}</span>
+            <span class="partner-card-discount">Скидка ${partner.discount}</span>
+          </div>
           <div class="partner-card-title">${escapeHtml(partnerName)}</div>
-          <span class="partner-card-discount">Скидка ${partner.discount}</span>
+          <div class="partner-card-desc">${escapeHtml(desc)}</div>
         </div>
-        <div class="partner-card-desc">${escapeHtml(desc)}</div>
+        <div class="partner-qr-preview">
+          <img src="${partner.qrImage}" alt="${escapeHtml(partnerName)} QR" class="partner-qr-thumb" />
+          <span class="partner-handle-tag">${escapeHtml(partner.handle)}</span>
+        </div>
       </div>
     `;
   }).join("");
@@ -1337,43 +1358,9 @@ function renderResult(level, score) {
     }, stepTime);
   }
 
-  // Populate Quiz Review
-  dom.reviewContainer.classList.add("hidden");
-  if (level === "medium" && state.quiz?.answersLog) {
-    dom.reviewContainer.classList.remove("hidden");
-    dom.reviewTitle.textContent = state.lang === "kk" ? "Жауаптарды талдау" : "Разбор ваших ответов";
-    
-    dom.reviewList.innerHTML = state.quiz.answersLog.map((log, index) => {
-      const qNum = index + 1;
-      const choicesHtml = log.shuffledAnswers.map((ansText, aIdx) => {
-        let statusClass = "normal";
-        let badgeHtml = "";
-        
-        if (aIdx === log.correctShuffledIndex) {
-          statusClass = "correct";
-          badgeHtml = `<span class="review-badge correct">${state.lang === "kk" ? "Дұрыс" : "Верно"}</span>`;
-        } else if (aIdx === log.selectedShuffledIndex && !log.isCorrect) {
-          statusClass = "wrong";
-          badgeHtml = `<span class="review-badge wrong">${state.lang === "kk" ? "Қате" : "Ваш ответ"}</span>`;
-        }
-        
-        const letter = String.fromCharCode(65 + aIdx);
-        return `
-          <div class="review-ans-row ${statusClass}">
-            <span class="answer-letter" style="width:1.6rem;height:1.6rem;font-size:0.75rem;">${letter}</span>
-            <span style="flex-grow:1">${escapeHtml(ansText)}</span>
-            ${badgeHtml}
-          </div>
-        `;
-      }).join("");
-      
-      return `
-        <div class="review-item">
-          <p class="review-q-text">${qNum}. ${escapeHtml(log.questionText)}</p>
-          <div class="review-answers">${choicesHtml}</div>
-        </div>
-      `;
-    }).join("");
+  // Hide Quiz Review as requested
+  if (dom.reviewContainer) {
+    dom.reviewContainer.classList.add("hidden");
   }
 
   dom.resultActions.innerHTML = "";
