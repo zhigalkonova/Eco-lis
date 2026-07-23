@@ -228,21 +228,17 @@
 
   // Fetch all logs (used by admin dashboard)
   async function fetchVisits() {
-    let cloudVisits = [];
     if (db) {
       try {
         const snapshot = await db.collection("visits").get();
-        snapshot.forEach(doc => cloudVisits.push(doc.data()));
+        const visits = [];
+        snapshot.forEach(doc => visits.push(doc.data()));
+        return visits;
       } catch (err) {
         console.warn("Firestore fetchVisits error:", err);
       }
     }
-    let mockVisits = JSON.parse(localStorage.getItem("ecoQrMockDb_visits") || "[]");
-    
-    const map = new Map();
-    mockVisits.forEach(v => map.set(v.id, v));
-    cloudVisits.forEach(v => map.set(v.id, v));
-    return Array.from(map.values());
+    return JSON.parse(localStorage.getItem("ecoQrMockDb_visits") || "[]");
   }
 
   // Clear mock databases
@@ -545,21 +541,17 @@
   }
 
   async function fetchAllCoupons() {
-    let cloudCoupons = [];
     if (db) {
       try {
         const snapshot = await db.collection("coupons").get();
-        snapshot.forEach(doc => cloudCoupons.push(doc.data()));
+        const coupons = [];
+        snapshot.forEach(doc => coupons.push(doc.data()));
+        return coupons;
       } catch (err) {
         console.warn("Firestore error on fetchAllCoupons:", err);
       }
     }
-    let mockCoupons = JSON.parse(localStorage.getItem("ecoQrMockDb_coupons") || "[]");
-
-    const map = new Map();
-    mockCoupons.forEach(c => map.set(c.code, c));
-    cloudCoupons.forEach(c => map.set(c.code, c));
-    return Array.from(map.values());
+    return JSON.parse(localStorage.getItem("ecoQrMockDb_coupons") || "[]");
   }
 
   // Export functions to window object
