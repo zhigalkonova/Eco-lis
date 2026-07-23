@@ -550,6 +550,10 @@ function cacheDom() {
     "resultMessage",
     "resultGrid",
     "resultActions",
+    "endQrSection",
+    "endQrTitle",
+    "endQrSubtitle",
+    "endQrGrid",
     "couponContainer",
     "couponBadge",
     "couponTitle",
@@ -757,6 +761,7 @@ function renderPartnerGrid() {
       const pId = card.dataset.partnerId;
       state.selectedPartner = PARTNERS.find(p => p.id === pId);
       renderPartnerGrid();
+      renderEndQrGrid();
       if (state.selectedPartner) {
         const partnerName = getLocalizedText(state.selectedPartner.name);
         dom.claimCouponButton.disabled = false;
@@ -1370,7 +1375,30 @@ function renderResult(level, score) {
     addResultButton(copy.result.toInfo, "secondary", renderInfo);
   }
 
+  renderEndQrGrid();
   showScreen("result");
+}
+
+function renderEndQrGrid() {
+  if (!dom.endQrGrid || !dom.endQrTitle || !dom.endQrSubtitle) return;
+  const isKk = state.lang === "kk";
+  dom.endQrTitle.textContent = isKk
+    ? "30% жеңілдікті пайдалану үшін мекемелердің QR-кодтары:"
+    : "QR-коды заведений для использования скидки 30%:";
+  dom.endQrSubtitle.textContent = isKk
+    ? "Мекеменің Instagram парақшасына өту үшін QR-кодты сканерлеңіз"
+    : "Отсканируйте QR-код для перехода в Instagram заведения";
+
+  dom.endQrGrid.innerHTML = PARTNERS.map(partner => {
+    const isSelected = state.selectedPartner?.id === partner.id;
+    const name = getLocalizedText(partner.name);
+    return `
+      <div class="end-qr-card ${isSelected ? 'highlighted' : ''}">
+        <span class="end-qr-partner-name">${escapeHtml(name)}</span>
+        <img src="${partner.qrImage}" alt="${escapeHtml(name)} QR" class="end-qr-img" />
+      </div>
+    `;
+  }).join("");
 }
 
 function addResultButton(label, type, onClick) {
