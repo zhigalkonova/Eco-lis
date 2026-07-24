@@ -1432,3 +1432,41 @@ noscript {
   border-radius: 12px;
   filter: drop-shadow(0 4px 12px rgba(0,0,0,0.06));
 }
+
+.coupon-clean-qr-link {
+  display: block;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.partner-instagram-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1.1rem;
+  background: linear-gradient(135deg, #e1306c, #f77737);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: 99px;
+  text-decoration: none;
+  box-shadow: 0 4px 12px rgba(225, 48, 108, 0.25);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.partner-instagram-btn:hover {
+  transform: translateY(-2px);
+  color: #ffffff;
+  box-shadow: 0 6px 18px rgba(225, 48, 108, 0.35);
+}
+
+.end-qr-link-hint {
+  display: inline-block;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #e1306c;
+  background: rgba(225, 48, 108, 0.08);
+  padding: 0.25rem 0.65rem;
+  border-radius: 99px;
+  margin-top: 0.2rem;
+}

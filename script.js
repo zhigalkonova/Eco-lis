@@ -18,6 +18,7 @@ const PARTNERS = [
     discount: "30%",
     qrImage: "assets/images/partners/legion-qr-clean.png",
     handle: "@LEGION_CYBER_LOUNGE",
+    url: "https://www.instagram.com/legion_cyber_lounge?igsh=bGptODBvbmQ4a2Ey",
     desc: { ru: "Скидка 30% на игровое время и услуги клуба", kk: "Ойын уақыты мен клуб қызметтеріне 30% жеңілдік" }
   },
   {
@@ -27,6 +28,7 @@ const PARTNERS = [
     discount: "30%",
     qrImage: "assets/images/partners/kinderpark-qr-clean.png",
     handle: "@KINDER_PARK_LSK",
+    url: "https://www.instagram.com/kinder_park_lsk?igsh=MTZubDA2MXBob2k1ag==",
     desc: { ru: "Скидка 30% на посещение парка и аттракционы", kk: "Саябаққа кіруге және аттракциондарға 30% жеңілдік" }
   },
   {
@@ -36,6 +38,7 @@ const PARTNERS = [
     discount: "30%",
     qrImage: "assets/images/partners/wafflefox-qr-clean.png",
     handle: "@WAFFLE.FOX.LSK",
+    url: "https://www.instagram.com/waffle.fox.lsk?igsh=bjYzNnp4Ymd3eTZl",
     desc: { ru: "Скидка 30% на вафли и напитки", kk: "Вафлилер мен сусындарға 30% жеңілдік" }
   },
   {
@@ -45,6 +48,7 @@ const PARTNERS = [
     discount: "30%",
     qrImage: "assets/images/partners/donerfox-qr-clean.png",
     handle: "@DONER.FOX.LSK",
+    url: "https://www.instagram.com/doner.fox.lsk?igsh=MW41MXN2OHp1eDZwOA==",
     desc: { ru: "Скидка 30% на донеры и комбо-наборы", kk: "Донерлер мен комбо-жинақтарға 30% жеңілдік" }
   }
 ];
@@ -716,7 +720,12 @@ async function renderCouponSection() {
         </div>
         <div class="coupon-qr-card-wrapper">
           <div class="coupon-qr-title">${state.lang === "kk" ? "Мекеменің Instagram QR-коды:" : "Instagram QR-код заведения:"}</div>
-          <img src="${partner.qrImage}" alt="${escapeHtml(partnerName)} QR" class="coupon-clean-qr-img" />
+          <a href="${partner.url}" target="_blank" rel="noopener noreferrer" class="coupon-clean-qr-link" title="Открыть Instagram ${escapeHtml(partnerName)}">
+            <img src="${partner.qrImage}" alt="${escapeHtml(partnerName)} QR" class="coupon-clean-qr-img" />
+          </a>
+          <a href="${partner.url}" target="_blank" rel="noopener noreferrer" class="partner-instagram-btn">
+            📸 ${state.lang === "kk" ? "Instagram парақшасын ашу" : "Открыть Instagram заведения"}
+          </a>
         </div>
       `;
     }
@@ -1386,17 +1395,18 @@ function renderEndQrGrid() {
     ? "30% жеңілдікті пайдалану үшін мекемелердің QR-кодтары:"
     : "QR-коды заведений для использования скидки 30%:";
   dom.endQrSubtitle.textContent = isKk
-    ? "Мекеменің Instagram парақшасына өту үшін QR-кодты сканерлеңіз"
-    : "Отсканируйте QR-код для перехода в Instagram заведения";
+    ? "Instagram парақшасына өту үшін карточканы немесе QR-кодты басыңыз"
+    : "Нажмите на карточку или QR-код для перехода в Instagram заведения";
 
   dom.endQrGrid.innerHTML = PARTNERS.map(partner => {
     const isSelected = state.selectedPartner?.id === partner.id;
     const name = getLocalizedText(partner.name);
     return `
-      <div class="end-qr-card ${isSelected ? 'highlighted' : ''}">
+      <a href="${partner.url}" target="_blank" rel="noopener noreferrer" class="end-qr-card ${isSelected ? 'highlighted' : ''}" style="text-decoration: none; color: inherit;">
         <span class="end-qr-partner-name">${escapeHtml(name)}</span>
         <img src="${partner.qrImage}" alt="${escapeHtml(name)} QR" class="end-qr-img" />
-      </div>
+        <span class="end-qr-link-hint">📸 Instagram</span>
+      </a>
     `;
   }).join("");
 }
